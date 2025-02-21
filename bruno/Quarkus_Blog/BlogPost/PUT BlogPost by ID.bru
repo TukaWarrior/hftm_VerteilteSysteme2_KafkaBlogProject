@@ -1,0 +1,25 @@
+meta {
+  name: PUT BlogPost by ID
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{localhost}}/blogpost/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: 31
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJNR1NnMmYwcjhOekItWVFjNHFUdHRBWUVLRWQ1MTVYRVFFV0R1aUVxUWpRIn0.eyJleHAiOjE3MjY2ODQ4NzIsImlhdCI6MTcyNjY4MzM3MiwianRpIjoiNmQ1NmZmMmQtYTU0Ny00ZTc3LTljZjUtNDUxZWUwYmI2NDMyIiwiaXNzIjoiaHR0cDovL2tleWNsb2FrOjgxODAvcmVhbG1zL2Jsb2dwcm9qZWN0IiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImIxMWU4YTc4LTY2NjAtNDBiOC1iYTkwLTk3NmVhMzQ4NWY0ZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImJhY2tlbmQtc2VydmljZSIsInNpZCI6IjZlOWMxYTJmLTk0ZjktNGI4YS05MjY1LWNmNDQwM2FlYzZmNiIsImFjciI6IjEiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1ibG9ncHJvamVjdCIsIm9mZmxpbmVfYWNjZXNzIiwiYWRtaW4iLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwicHJlZmVycmVkX3VzZXJuYW1lIjoiYWxpY2UifQ.iZK0MFy8YIQ5Q7BfRMHRFv1dOIPxB03g8Iyahsaj6vHn_LzreVFtZQi-35ABj9wQ8-xYY5dAgV1N0Bsc4PFIkGu6xWyDifbLQjpxqGRqlo2YdjW8NIJyLRvV6s86AAEkzkqUHu69JOw3sG7rm_2NHvbsS_btx01DqW2IOmtygMNVojZtK8OptNbEHhFVTK9SCLz2iEJrIGSwOdxzt282PgB91x6QnFVWbcN2D5pfrf-fDdpR_U2DA1UkuHb0UjK-5131kNTRuTJsY2g6epJBRV9-llwG8vS-jVO7wQCqmscz1onK997Y50Nd60dEXEOv7JbC3cbl_eFAbnPwRm5D-Q
+}
+
+body:json {
+  {
+    "title": "Bruno replaced this content"
+  }
+}

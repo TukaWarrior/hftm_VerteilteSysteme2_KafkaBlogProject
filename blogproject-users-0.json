@@ -1,0 +1,78 @@
+{
+  "realm" : "blogproject",
+  "users" : [ {
+    "id" : "b11e8a78-6660-40b8-ba90-976ea3485f4e",
+    "username" : "alice",
+    "emailVerified" : false,
+    "createdTimestamp" : 1726608799471,
+    "enabled" : true,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "a5b71c27-6cd8-4c5a-a627-27e6c57e1bb0",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1726608806752,
+      "secretData" : "{\"value\":\"Ac9ZQHTi208/r69UmpALiOz7GWPcyMyfxQMQpVzUUBo=\",\"salt\":\"1p1SDIYNfHTQ2J16SEF3VA==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "admin", "default-roles-blogproject" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "8fa76d8b-f003-45f6-97fb-701cb0aacff5",
+    "username" : "bob",
+    "emailVerified" : false,
+    "createdTimestamp" : 1726608819958,
+    "enabled" : true,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "c87ccd06-6186-4ece-b38b-94dba87ffe28",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1726608826257,
+      "secretData" : "{\"value\":\"/ak1Toi7yTwgSHTJ5v88roBVaESiB/kcOmCIMhyGRrU=\",\"salt\":\"xXZh/bRQgZQa6PDYBYzGoA==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "moderator", "default-roles-blogproject" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "6334db8b-c746-481a-8fe8-dfa879a65751",
+    "username" : "carl",
+    "emailVerified" : false,
+    "createdTimestamp" : 1726608840067,
+    "enabled" : true,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "17c1d7bb-ac0c-4ec9-82f0-0b6ea0151bde",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1726608845928,
+      "secretData" : "{\"value\":\"2B1N0leR4ZcdewSxBOK/tPsSPComwPhCfxUB8Gh1i14=\",\"salt\":\"6+BO1FQn0st0W9BoZ6jHgQ==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "user", "default-roles-blogproject" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "80d7752c-ee2f-4ae7-8ca7-9a63b49f9154",
+    "username" : "service-account-backend-service",
+    "emailVerified" : false,
+    "createdTimestamp" : 1726608739551,
+    "enabled" : true,
+    "totp" : false,
+    "serviceAccountClientId" : "backend-service",
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-blogproject" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}

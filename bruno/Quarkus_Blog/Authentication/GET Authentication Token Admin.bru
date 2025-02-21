@@ -1,0 +1,21 @@
+meta {
+  name: GET Authentication Token Admin
+  type: http
+  seq: 3
+}
+
+get {
+  url: 
+  body: none
+  auth: oauth2
+}
+
+auth:oauth2 {
+  grant_type: password
+  access_token_url: http://keycloak:8180/realms/blogproject/protocol/openid-connect/token
+  username: alice
+  password: alice
+  client_id: backend-service
+  client_secret: secret
+  scope: 
+}

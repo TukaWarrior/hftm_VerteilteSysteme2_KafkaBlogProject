@@ -1,0 +1,22 @@
+meta {
+  name: POST  BlogPost
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{localhost}}/blogpost
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJvWGlucHBOa2VOZ0NJLVBUazctUFhTMUxwa1lFQlE5U25fZFRYekE4czI0In0.eyJleHAiOjE3MjY2ODY3MzQsImlhdCI6MTcyNjY4NjEzNCwianRpIjoiMThmM2U1ODUtNWJjZi00N2Y4LTgxMjItNzcwYTc1Yjk1Y2NhIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL3JlYWxtcy9ibG9ncHJvamVjdCIsInR5cCI6IkJlYXJlciIsImF6cCI6ImJhY2tlbmQtc2VydmljZSIsInNpZCI6ImUwYjdkODBlLTllYTQtNDNlYy04ZTZhLTRiNWUxMjEwY2QyYiIsInNjb3BlIjoibWljcm9wcm9maWxlLWp3dCIsInVwbiI6ImFsaWNlIiwiZ3JvdXBzIjpbImFkbWluIl19.gw4e35pDPl3Hi1u4TOG0OIODMKnZ_0xEJYN_I7RQILkJrJWdvUjdzaEhxlmMs8QRreyyvr0NyyJ-ULaXFlenq-bCGo4kcMBPv9pJKN8OfCofezg2Qe-u91NWx5IgKKP0ebIPu0iuIApHu3mQSy0OBh9iOVrOc8XwWULoWi1hKxH4h6cwXG5RV8zwjS8cHwPXmvd1TIoS_2DmyoGW2NIvEz7BPFc3YK7u24Cne6-RVnLkJOe3GzOQ-06Yk9d9rS0wGgRI0VF5VMJ4_2nnBn7y042RrjV624sgIWmcOfGDRxpyhxbTrQAAAgRy2TpNt2B6bojMHRuRdqMWU-2jzCqnJA
+}
+
+body:json {
+  {
+    "title": "Test BlogPost 1",
+    "content": "Bruno says hi"
+  }
+}

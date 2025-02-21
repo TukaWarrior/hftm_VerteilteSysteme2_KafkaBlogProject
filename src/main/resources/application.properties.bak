@@ -1,0 +1,114 @@
+# -------------------------| Quarkus (Hibernate ORM for persistance / for bug fixing) |-------------------------
+# Instructs Hibernate to generate the database schema when the application starts.
+# quarkus.hibernate-orm.database.generation=create
+# Instructs Hibernate to drop the existing schema and recreate it every time the application starts.
+# quarkus.hibernate-orm.database.generation=drop-and-create
+
+
+# -------------------------| DOCKER |-------------------------
+# Enable automatic Docker container image build. 
+quarkus.container-image.build=true
+# Specify the image name. Replace with your desired image name. 
+quarkus.container-image.name=ch.hftm/blogproject
+# Specify the image version. Replace with your desired version. 
+quarkus.container-image.tag=1.0.1-SNAPSHOT
+
+# -------------------------| Quarkus (general configuration) |-------------------------
+# Configures the application to listen on all network interfaces. This is useful when running the application in a Docker container or in a LAN environment.
+quarkus.http.host=0.0.0.0
+# Specifies the HTTP port the Quarkus application will use. The default is 8080.
+quarkus.http.port=8080
+
+
+
+# -------------------------| KEYCLOAK (general configuration) |-------------------------
+# Specifies the client ID of the Quarkus application as registered in Keycloak.
+quarkus.oidc.client-id=backend-service
+# Provides the client secret for the Keycloak client. This is needed for confidential clients to authenticate against Keycloak.
+%dev.quarkus.oidc.credentials.secret=secret
+%prod.quarkus.oidc.credentials.secret=I5QFojSx5hGVcFmQuEj5qFRRIUyzHSeS
+
+
+
+# -------------------------| KEYCLOAK (standalone container) |-------------------------
+# a) KeyCloak als eigener Container
+# Specifies the URL of the Keycloak server and realm to use for OpenID Connect (OIDC) authentication. It has to match the actual address and port where the keycloak server is running. 
+# (AI Generated) Note: If your Keycloak container is named keycloak-container and it's running on a different network or port, adjust this URL accordingly (e.g., http://keycloak-container:8080/realms/blog).
+quarkus.oidc.auth-server-url=http://keycloak:8180/realms/blogproject
+
+
+
+# -------------------------| KEYCLOAK (quarkus dev services) |-------------------------
+# Sets the port for Keycloak when using Quarkus Dev Services.
+%dev.quarkus.keycloak.devservices.port=8180
+# Sets the realm name when using Quarkus Dev Services for Keycloak.
+%dev.quarkus.keycloak.devservices.realm-name=blogproject
+
+# b) KeyCloak users, roles and passwords.
+%dev.quarkus.keycloak.devservices.users.alice=alice
+%dev.quarkus.keycloak.devservices.roles.alice=admin
+%dev.quarkus.keycloak.devservices.users.bob=bob
+%dev.quarkus.keycloak.devservices.roles.bob=moderator
+%dev.quarkus.keycloak.devservices.users.carl=carl
+%dev.quarkus.keycloak.devservices.roles.carl=user
+
+
+
+# -------------------------| CROSS Origin |-------------------------
+# Enables Cross-Origin Resource Sharing (CORS) support. This is necessary when the frontend and backend are served from different origins.
+quarkus.http.cors=true
+# Allows all origins to access the application. This is useful for development and testing, but for production, allowed origins should be specified for better security.
+quarkus.http.cors.origins=*
+
+
+
+# -------------------------| SWAGGER UI |-------------------------
+# (Optional) Enables authentication windows in swagger-ui using tokens. Useful for testing.
+quarkus.smallrye-openapi.security-scheme=jwt
+# (Optional) Ensures that Swagger UI is always available, regardless of the environment (e.g., development, testing, or production)
+quarkus.swagger-ui.always-include=true
+
+
+# -------------------------------------| Database - Development Mode, MySQL from Quarkus Dev-Services (Quarkus Dev Services with MySQL) |-------------------------------------
+# Use this configuration for development with MySQL provided by quarkus dev services.
+
+# -------------------------------------| Database - Development Mode with separate MySQL DB-Container |-------------------------------------
+# Use this configuration for development with MySQL.
+quarkus.hibernate-orm.database.generation=drop-and-create
+%dev.quarkus.datasource.username=dbuser
+%dev.quarkus.datasource.password=dbuser
+%dev.quarkus.datasource.jdbc.url=jdbc:mysql://localhost:3306/blogprojectdb
+
+# -------------------------------------| Database - Development Mode with separate MySQL DB-Container |-------------------------------------
+# Use this configuration for development with MySQL.
+quarkus.hibernate-orm.database.generation=drop-and-create
+%prod.quarkus.datasource.username=dbuser
+%prod.quarkus.datasource.password=dbuser
+%prod.quarkus.datasource.jdbc.url=jdbc:mysql://quarkus-blogproject-mysql:3306/blogprojectdb
+
+# Flyway DB Migration
+# %prod.quarkus.hibernate-orm.database.generation=none
+# %prod.quarkus.flyway.migrate-at-start=true
+
+# CREATE TABLE BlogPost(
+#     blogPostID      BIGINT AUTO_INCREMENT NOT NULL,
+#     title           VARCHAR(255) NULL,
+#     content         TEXT NULL,
+#     creator         VARCHAR(255) NULL,
+#     createdAt       TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+#     lastChangedAt   TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+#     CONSTRAINT PK_blogPost PRIMARY KEY (blogPostID)
+# );
+
+# CREATE TABLE Comment(
+#     commentID       BIGINT AUTO_INCREMENT NOT NULL,
+#     content         TEXT NULL,
+#     creator         VARCHAR(255) NULL,
+#     createdAt       TIMESTAMP  NULL DEFAULT CURRENT_TIMESTAMP,
+#     lastChangedAt   TIMESTAMP  NULL CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+#     blogPostID      BIGINT NULL,
+#     CONSTRAINT PK_comment PRIMARY KEY (commentID)
+# );
+
+# ALTER TABLE Comment
+#     ADD CONSTRAINT FK_COMMENT_ON_BLOG FOREIGN KEY (blogPostID) REFERENCES BlogPost (blogPostID) ON DELETE CASCADE;
