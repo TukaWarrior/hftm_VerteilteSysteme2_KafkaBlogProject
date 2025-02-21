@@ -1,4 +1,7 @@
 # Blog Project - Java Backend
+
+http://localhost:8080/q/swagger-ui
+
 This is my school project, that is part of the "Distributed Systems" course from the third year of study at the HFTM in Grenchen.
 The goal is to build up a web-api backend, which I can utilise and extend in future courses. 
 This project uses the java framework Quarkus.
