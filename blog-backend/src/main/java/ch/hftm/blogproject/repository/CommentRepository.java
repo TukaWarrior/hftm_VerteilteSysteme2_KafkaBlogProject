@@ -1,7 +1,7 @@
 package ch.hftm.blogproject.repository;
 
 import ch.hftm.blogproject.model.entity.Comment;
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.hibernate.reactive.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
 // This class serves as the interface between the CommentService class and the MySQL Database.
