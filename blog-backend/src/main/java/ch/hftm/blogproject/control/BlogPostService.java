@@ -11,7 +11,6 @@ import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import io.quarkus.hibernate.reactive.panache.PanacheRepository;
 
 @ApplicationScoped
 public class BlogPostService {
@@ -19,22 +18,63 @@ public class BlogPostService {
     @Inject
     BlogPostRepository blogPostRepository;
 
+    // Get all BlogPosts
     public Multi<BlogPostDTO> getBlogPosts() {
-        return blogPostRepository.findAll().stream().onItem().transform(DTOConverter::toBlogPostDto);
-    }
-
-    public Uni<BlogPostDTO> getBlogPostById(Long blogPostID) {
-        return blogPostRepository.findById(blogPostID).onItem().failWith(() -> new NotFoundException("Blog post with ID " + blogPostID + " not found."))
+        return blogPostRepository.findAllBlogPosts()
                 .onItem().transform(DTOConverter::toBlogPostDto);
     }
 
+    // Get BlogPost by ID
+    public Uni<BlogPostDTO> getBlogPostById(Long blogPostID) {
+        return blogPostRepository.findBlogPostById(blogPostID)
+                .onItem().ifNull().failWith(() -> new NotFoundException("Blog post with ID " + blogPostID + " not found."))
+                .onItem().transform(DTOConverter::toBlogPostDto);
+    }
+
+    // Add a new BlogPost
     public Uni<BlogPostDTO> addBlogPost(BlogPostDTO blogPostDTO) {
-        BlogPost blogPost = new BlogPost();
-        blogPost.setTitle(blogPostDTO.getTitle());
-        blogPost.setContent(blogPostDTO.getContent());
-        blogPost.setCreator(blogPostDTO.getCreator());
+        BlogPost blogPost = DTOConverter.toBlogPost(blogPostDTO);
         blogPost.setCreatedAt(ZonedDateTime.now());
-        return blogPostRepository.persist(blogPost).onItem().transform(DTOConverter::toBlogPostDto);
+        return blogPostRepository.persistBlogPost(blogPost)
+                .onItem().transform(DTOConverter::toBlogPostDto);
+    }
+
+    // Update a BlogPost
+    public Uni<BlogPostDTO> updateBlogPost(BlogPostDTO blogPostDTO) {
+        BlogPost blogPost = DTOConverter.toBlogPost(blogPostDTO);
+        blogPost.setLastChangedAt(ZonedDateTime.now());
+        return blogPostRepository.updateBlogPost(blogPost)
+                .onItem().ifNull().failWith(() -> new NotFoundException("Blog post with ID " + blogPostDTO.getBlogPostID() + " not found."))
+                .onItem().transform(DTOConverter::toBlogPostDto);
+    }
+
+    // Delete a BlogPost by ID
+    public Uni<Void> deleteBlogPost(Long blogPostID) {
+        return blogPostRepository.deleteBlogPostById(blogPostID)
+                .onItem().ifNull().failWith(() -> new NotFoundException("Blog post with ID " + blogPostID + " not found."))
+                .replaceWithVoid();
+    }
+
+    // Delete all BlogPosts
+    public Uni<Void> deleteAllBlogPosts() {
+        return blogPostRepository.deleteAllBlogPosts();
+    }
+
+    // Count all BlogPosts
+    public Uni<Long> countBlogPosts() {
+        return blogPostRepository.countBlogPosts();
+    }
+
+    // Get BlogPosts by Creator
+    public Multi<BlogPostDTO> getBlogPostsByCreator(String creator) {
+        return blogPostRepository.findBlogPostsByCreator(creator)
+                .onItem().transform(DTOConverter::toBlogPostDto);
+    }
+
+    // Get BlogPosts by Date Range
+    public Multi<BlogPostDTO> getBlogPostsByDateRange(ZonedDateTime startDate, ZonedDateTime endDate) {
+        return blogPostRepository.findBlogPostsByDateRange(startDate, endDate)
+                .onItem().transform(DTOConverter::toBlogPostDto);
     }
 
     // ------------------------- Getting BlogPosts -------------------------
@@ -66,79 +106,6 @@ public class BlogPostService {
     //     }
     // }
 
-    // Get a BlogPost by ID
-    // public BlogPostDTO OLDgetBlogPostById(Long blogPostID) {
-    //     BlogPost blogPost;
-    //     try {
-    //         blogPost = blogPostRepository.findById(blogPostID);
-    //         if (blogPost == null) {
-    //             throw new NotFoundException("Blog post with ID " + blogPostID + " not found.");
-    //         }
-    //         return DTOConverter.toBlogPostDto(blogPost);
-    //     } catch (Exception e) {
-    //         throw new DatabaseException("Error while accessing the database.", e);
-    //     }
-    // }
-
-    // Get Blog Posts by Creator
-    // public List<BlogPostDTO> OLDgetBlogPostsByCreator(String creator) {
-    //     try {
-    //         List<BlogPost> blogPosts = blogPostRepository.find("creator", creator).list();
-    //         return DTOConverter.toBlogPostDtoList(blogPosts);
-    //     } catch (Exception e) {
-    //         throw new DatabaseException("Error while accessing the database.", e);
-    //     }
-    // }
-
-    // public List<BlogPostDTO> OLDgetBlogPostsByDateRange(ZonedDateTime startDate, ZonedDateTime endDate) {
-    //     try {
-    //         List<BlogPost> blogPosts = blogPostRepository
-    //             .find("createdAt BETWEEN ?1 AND ?2", startDate, endDate).list();
-    //         return DTOConverter.toBlogPostDtoList(blogPosts);
-    //     } catch (Exception e) {
-    //         throw new DatabaseException("Error while accessing the database.", e);
-    //     }
-    // }
-
-    // Add a new BlogPost
-    // @Transactional
-    // public BlogPostDTO OLDaddBlogPost(BlogPostDTO blogPostDTO) {
-    //     BlogPost blogPost = new BlogPost();
-    //     blogPost.setTitle(blogPostDTO.getTitle());
-    //     blogPost.setContent(blogPostDTO.getContent());
-    //     blogPost.setCreator(blogPostDTO.getCreator());
-    //     blogPost.setCreatedAt(ZonedDateTime.now());
-    //     try {
-    //         blogPostRepository.persist(blogPost);
-    //     } catch (Exception e) {
-    //         throw new DatabaseException("Error while adding the blog post to the database.", e);
-    //     }
-    //     return DTOConverter.toBlogPostDto(blogPost);
-    // }
-
-    // Update blogPost
-    // @Transactional
-    // public BlogPostDTO OLDputBlogPost(BlogPostDTO blogPostDTO) {
-    //     BlogPost existingBlogPost;
-    //     try {
-    //         existingBlogPost = blogPostRepository.findById(blogPostDTO.getBlogPostID());
-    //     } catch (Exception e) {
-    //         throw new DatabaseException("Error while accessing the database.", e);
-    //     }
-    //     if (existingBlogPost == null) {
-    //         throw new NotFoundException("Blog post with ID " + blogPostDTO.getBlogPostID() + " not found.");
-    //     }
-    //     existingBlogPost.setTitle(blogPostDTO.getTitle());
-    //     existingBlogPost.setContent(blogPostDTO.getContent());
-    //     existingBlogPost.setLastChangedAt(ZonedDateTime.now());
-
-    //     try {
-    //         blogPostRepository.persist(existingBlogPost);
-    //     } catch (Exception e) {
-    //         throw new DatabaseException("Error while updating the blog post with ID " + blogPostDTO.getBlogPostID(), e);
-    //     }
-    //     return DTOConverter.toBlogPostDto(existingBlogPost);
-    // }
 
     // @Transactional
     // public BlogPostDTO OLDpatchBlogPost(Long id, BlogPostDTO blogPostDTO) {
@@ -163,42 +130,5 @@ public class BlogPostService {
     //         throw new DatabaseException("Error while partially updating the blog post with ID " + id, e);
     //     }
     //     return DTOConverter.toBlogPostDto(existingBlogPost);
-    // }
-
-    // Delete a BlogPost by id
-    // @Transactional
-    // public BlogPostDTO OLDdeleteBlogPost (Long blogPostID) {
-
-    //     BlogPost blogPost = blogPostRepository.findById(blogPostID);
-    //     if (blogPost == null) {
-    //         throw new NotFoundException("Blog post with ID " + blogPostID + " not found.");
-    //     }
-    //     BlogPostDTO deletedBlogPostDTO = DTOConverter.toBlogPostDto(blogPost);
-    //     try {
-    //         blogPostRepository.deleteById(blogPostID);
-    //     } catch (Exception e) {
-    //         throw new DatabaseException("Error while deleting the blog post with ID " + blogPostID, e);
-    //     }
-    //     return deletedBlogPostDTO;
-    // }
-
-    // Delete all BlogPosts
-    // @Transactional
-    // public void OLDdeleteAllBlogPosts() {
-    //     try {
-    //         blogPostRepository.deleteAll();
-    //     } catch (Exception e) {
-    //         throw new DatabaseException("Error while deleting all blog posts.", e);
-    //     }
-    // }
-
-    // ------------------------- Counting -------------------------
-    // Count all BlogPosts
-    // public Long OLDcountBlogPosts() {
-    //     try {
-    //         return blogPostRepository.count();
-    //     } catch (Exception e) {
-    //         throw new DatabaseException("Error while counting blog posts in the database.", e);
-    //     }
     // }
 }
