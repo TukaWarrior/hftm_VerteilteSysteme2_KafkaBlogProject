@@ -1,7 +1,6 @@
 package ch.hftm.blogproject.model.dto;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -15,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.ALWAYS)
 public class BlogPostDTO {
+
     private Long blogPostID;
     @NotBlank(message = "Title cannot be empty")
     private String title;
@@ -23,5 +23,4 @@ public class BlogPostDTO {
     private String creator;
     private ZonedDateTime createdAt;
     private ZonedDateTime lastChangedAt;
-    private List<CommentDTO> comments;
 }

@@ -1,70 +1,56 @@
 package ch.hftm.blogproject.repository;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import ch.hftm.blogproject.model.entity.BlogPost;
 import io.quarkus.hibernate.reactive.panache.PanacheRepository;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
-
-// This class serves as the interface between the BlogService class and the MySQL Database.
 
 @ApplicationScoped
 public class BlogPostRepository implements PanacheRepository<BlogPost>{
     
-    // Find all BlogPosts
-    public Multi<BlogPost> findAllBlogPosts() {
-        return this.listAll()
-            .onItem().transformToMulti(blogPosts -> Multi.createFrom().iterable(blogPosts));
+    // Get all blog posts
+    public Uni<List<BlogPost>> findAllBlogPosts() {
+        return this.listAll();
     }
 
-    // Find BlogPost by ID
+    // Get a blog post by ID
     public Uni<BlogPost> findBlogPostById(Long id) {
         return this.findById(id);
     }
 
-    // Persist a new BlogPost
+    // Add a new blog post
     public Uni<BlogPost> persistBlogPost(BlogPost blogPost) {
         return this.persist(blogPost).replaceWith(blogPost);
     }
 
-    // Update an existing BlogPost
+    // Update an existing blog post
     public Uni<BlogPost> updateBlogPost(BlogPost blogPost) {
         return this.findById(blogPost.getBlogPostID())
             .onItem().ifNotNull().invoke(existingBlogPost -> {
                 existingBlogPost.setTitle(blogPost.getTitle());
                 existingBlogPost.setContent(blogPost.getContent());
+                existingBlogPost.setCreator(blogPost.getCreator());
                 existingBlogPost.setLastChangedAt(ZonedDateTime.now());
             })
             .onItem().ifNotNull().transformToUni(existingBlogPost -> this.persist(existingBlogPost))
             .replaceWith(blogPost);
     }
 
-    // Delete a BlogPost by ID
+    // Delete a blog post by ID
     public Uni<Boolean> deleteBlogPostById(Long id) {
         return this.deleteById(id);
     }
 
-    // Delete all BlogPosts
+    // Delete all blog posts
     public Uni<Void> deleteAllBlogPosts() {
         return this.deleteAll().replaceWithVoid();
     }
 
-    // Count all BlogPosts
+    // Count all blog posts
     public Uni<Long> countBlogPosts() {
         return this.count();
-    }
-
-    // Find BlogPosts by Creator
-    public Multi<BlogPost> findBlogPostsByCreator(String creator) {
-        return this.find("creator", creator).list() // Fetch as List
-            .onItem().transformToMulti(blogPosts -> Multi.createFrom().iterable(blogPosts)); // Convert List to Multi
-    }
-
-    // Find BlogPosts by Date Range
-    public Multi<BlogPost> findBlogPostsByDateRange(ZonedDateTime startDate, ZonedDateTime endDate) {
-        return this.find("createdAt BETWEEN ?1 AND ?2", startDate, endDate).list() // Fetch as List
-            .onItem().transformToMulti(blogPosts -> Multi.createFrom().iterable(blogPosts)); // Convert List to Multi
     }
 }

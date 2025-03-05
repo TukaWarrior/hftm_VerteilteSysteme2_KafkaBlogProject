@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.ALWAYS)
 public class CommentDTO {
+
     private Long commentID;
     private Long blogPostID;
     @NotBlank(message = "Content cannot be empty")
