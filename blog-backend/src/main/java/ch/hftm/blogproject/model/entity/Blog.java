@@ -26,4 +26,5 @@ public class Blog {
     private String creator;
     private ZonedDateTime createdAt;
     private ZonedDateTime lastChangedAt;
+    private boolean isValidated;
 }

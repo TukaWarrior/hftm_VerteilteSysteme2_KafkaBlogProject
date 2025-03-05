@@ -3,6 +3,8 @@ package ch.hftm.blogproject.control;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import ch.hftm.blogproject.messaging.BlogProducer;
+import ch.hftm.blogproject.messaging.BlogValidationConsumer;
 import ch.hftm.blogproject.model.dto.BlogDTO;
 import ch.hftm.blogproject.model.entity.Blog;
 import ch.hftm.blogproject.model.exception.NotFoundException;
@@ -20,9 +22,12 @@ public class BlogService {
 
     @Inject
     BlogRepository blogRepository;
-
     @Inject
     CommentRepository commentRepository;
+    @Inject
+    BlogProducer blogProducer;
+    @Inject
+    BlogValidationConsumer blogValidationConsumer;
 
     // Get all blogs
     @WithSession
@@ -46,8 +51,23 @@ public class BlogService {
     public Uni<BlogDTO> addBlog(BlogDTO blogDTO) {
         Blog blog = BlogMapper.toBlogEntity(blogDTO);
         blog.setCreatedAt(ZonedDateTime.now());
-        return blogRepository.persistBlog(blog)
-            .onItem().transform(BlogMapper::toBlogDTO);
+        blog.setValidated(false); // Initially not validated
+
+        // Send the blog to Kafka for validation
+        blogProducer.sendBlog(BlogMapper.toBlogDTO(blog));
+
+        // Wait for validation response
+        return blogValidationConsumer.waitForValidation(blogDTO.getTitle(), blogDTO.getContent())
+            .onItem().transformToUni(isValid -> {
+                if (isValid) {
+                    // If valid, persist the blog in the database
+                    return blogRepository.persistBlog(blog)
+                        .onItem().transform(BlogMapper::toBlogDTO);
+                } else {
+                    // If invalid, throw an error
+                    return Uni.createFrom().failure(new IllegalArgumentException("Blog content is invalid."));
+                }
+            });
     }
 
     // Update an existing blog

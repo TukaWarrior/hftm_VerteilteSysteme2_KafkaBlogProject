@@ -55,27 +55,29 @@ public class BlogResource {
 
     // Add a new blog
     @POST
-    @RequestBody(
-    description = "Blog JSON. Only `title` and `content` are required. `blogID`, `createdAt`, and `lastChangedAt` are automatically generated.", required = true,
-    content = @Content(
-        mediaType = MediaType.APPLICATION_JSON,
-        schema = @Schema(
-            implementation = BlogDTO.class,
-            example = """
-            {
-                "title": "My first blog",
-                "content": "This is the content of my first blog.",
-                "creator": "john.doe"
-            }
-            """
-        )
-    )
-)
+//     @RequestBody(
+//     description = "Blog JSON. Only `title` and `content` are required. `blogID`, `createdAt`, and `lastChangedAt` are automatically generated.", required = true,
+//     content = @Content(
+//         mediaType = MediaType.APPLICATION_JSON,
+//         schema = @Schema(
+//             implementation = BlogDTO.class,
+//             example = """
+//             {
+//                 "title": "My first blog",
+//                 "content": "This is the content of my first blog.",
+//                 "creator": "john.doe"
+//             }
+//             """
+//         )
+//     )
+// )
     public Uni<Response> addBlog(BlogDTO bloDTO) {
         // Set the creator of the blog from the JWT token
         // bloDTO.setCreator(jsonWebToken.getName());
         return blogService.addBlog(bloDTO)
-            .onItem().transform(createdBlog -> Response.status(Response.Status.CREATED).entity(createdBlog).build()) // Return 201 Created
+            .onItem().transform(createdBlog -> Response.status(Response.Status.CREATED).entity(createdBlog).build())
+            .onFailure(IllegalArgumentException.class).recoverWithItem(e -> Response.status(Response.Status.BAD_REQUEST)
+                .entity(e.getMessage()).build())
             .onFailure().recoverWithItem(e -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity("Error creating blog: " + e.getMessage()).build());
     }
