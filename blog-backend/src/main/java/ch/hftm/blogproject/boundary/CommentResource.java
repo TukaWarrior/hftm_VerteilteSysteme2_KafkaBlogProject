@@ -5,7 +5,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import ch.hftm.blogproject.control.CommentService;
 import ch.hftm.blogproject.model.dto.CommentDTO;
 import ch.hftm.blogproject.model.exception.NotFoundException;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;

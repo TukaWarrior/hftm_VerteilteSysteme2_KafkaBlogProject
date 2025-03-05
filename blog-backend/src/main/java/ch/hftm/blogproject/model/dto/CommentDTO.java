@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class CommentDTO {
 
     private Long commentID;
-    private Long blogPostID;
+    private Long blogID;
     @NotBlank(message = "Content cannot be empty")
     private String content;
     private String creator;

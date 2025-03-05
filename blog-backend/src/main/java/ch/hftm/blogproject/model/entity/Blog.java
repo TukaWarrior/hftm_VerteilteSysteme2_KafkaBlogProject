@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BlogPost {
+public class Blog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "blogPostID")
-    private Long blogPostID;
+    @Column(name = "blogID")
+    private Long blogID;
     private String title;
     private String content;
     private String creator;

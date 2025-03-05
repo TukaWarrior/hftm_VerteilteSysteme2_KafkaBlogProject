@@ -54,7 +54,7 @@ public class CommentRepository implements PanacheRepository<Comment> {
         return this.count();
     }
 
-    public Uni<Void> deleteCommentsByBlogPostId(Long blogPostID) {
-        return this.delete("blogPostID", blogPostID).replaceWithVoid();
+    public Uni<Void> deleteCommentsByBlogID(Long blogID) {
+        return this.delete("blogID", blogID).replaceWithVoid();
     }
 }

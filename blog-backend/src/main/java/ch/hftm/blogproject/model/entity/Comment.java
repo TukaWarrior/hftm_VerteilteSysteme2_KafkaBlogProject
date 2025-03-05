@@ -21,7 +21,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "commentID")
     private Long commentID;
-    private Long blogPostID;
+    private Long blogID;
     private String content;
     private String creator;
     private ZonedDateTime createdAt;

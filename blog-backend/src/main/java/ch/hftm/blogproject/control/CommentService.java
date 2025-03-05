@@ -25,7 +25,7 @@ public class CommentService {
     public Uni<List<CommentDTO>> getAllComments() {
         return commentRepository.findAllComments()
             .onItem().transform(comments -> comments.stream()
-                .map(CommentMapper::toCommentDto)
+                .map(CommentMapper::toCommentDTO)
                 .toList());
     }
 
@@ -34,26 +34,26 @@ public class CommentService {
     public Uni<CommentDTO> getCommentById(Long commentID) {
         return commentRepository.findCommentById(commentID)
             .onItem().ifNull().failWith(() -> new NotFoundException("Comment with ID " + commentID + " not found."))
-            .onItem().transform(CommentMapper::toCommentDto);
+            .onItem().transform(CommentMapper::toCommentDTO);
     }
 
     // Add a new comment
     @WithTransaction
     public Uni<CommentDTO> addComment(CommentDTO commentDTO) {
-        Comment comment = CommentMapper.toComment(commentDTO);
+        Comment comment = CommentMapper.toCommentEntity(commentDTO);
         comment.setCreatedAt(ZonedDateTime.now());
         return commentRepository.persistComment(comment)
-            .onItem().transform(CommentMapper::toCommentDto);
+            .onItem().transform(CommentMapper::toCommentDTO);
     }
 
     // Update an existing comment
     @WithTransaction
     public Uni<CommentDTO> updateComment(CommentDTO commentDTO) {
-        Comment comment = CommentMapper.toComment(commentDTO);
+        Comment comment = CommentMapper.toCommentEntity(commentDTO);
         comment.setLastChangedAt(ZonedDateTime.now());
         return commentRepository.updateComment(comment)
             .onItem().ifNull().failWith(() -> new NotFoundException("Comment with ID " + commentDTO.getCommentID() + " not found."))
-            .onItem().transform(CommentMapper::toCommentDto);
+            .onItem().transform(CommentMapper::toCommentDTO);
     }
 
     // Delete a comment by ID
