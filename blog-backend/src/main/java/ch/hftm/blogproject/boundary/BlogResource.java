@@ -1,6 +1,9 @@
 package ch.hftm.blogproject.boundary;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import ch.hftm.blogproject.control.BlogService;
@@ -52,6 +55,22 @@ public class BlogResource {
 
     // Add a new blog
     @POST
+    @RequestBody(
+    description = "Blog JSON. Only `title` and `content` are required. `blogID`, `createdAt`, and `lastChangedAt` are automatically generated.", required = true,
+    content = @Content(
+        mediaType = MediaType.APPLICATION_JSON,
+        schema = @Schema(
+            implementation = BlogDTO.class,
+            example = """
+            {
+                "title": "My first blog",
+                "content": "This is the content of my first blog.",
+                "creator": "john.doe"
+            }
+            """
+        )
+    )
+)
     public Uni<Response> addBlog(BlogDTO bloDTO) {
         // Set the creator of the blog from the JWT token
         // bloDTO.setCreator(jsonWebToken.getName());

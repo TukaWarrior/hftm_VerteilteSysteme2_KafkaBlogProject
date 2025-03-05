@@ -35,6 +35,16 @@ public class CommentResource {
                 .entity("Error fetching comments: " + e.getMessage()).build());
     }
 
+    // Get all comments by blog ID
+    @GET
+    @Path("/blog/{blogID}")
+    public Uni<Response> getCommentsByBlogId(@PathParam("blogID") Long blogID) {
+        return commentService.getCommentsByBlogId(blogID)
+            .onItem().transform(comments -> Response.ok(comments).build())
+            .onFailure().recoverWithItem(e -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+            .entity("Error fetching comments for blog ID " + blogID + ": " + e.getMessage()).build());
+    }
+
     // Get a comment by ID
     @GET
     @Path("/{commentID}")
@@ -66,6 +76,15 @@ public class CommentResource {
                 .entity(e.getMessage()).build()) // Return 404 if NotFoundException is thrown
             .onFailure().recoverWithItem(e -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity("Error deleting comment: " + e.getMessage()).build()); // Catch all other errors
+    }
+
+    // Delete all comments
+    @DELETE
+    public Uni<Response> deleteAllComments() {
+        return commentService.deleteAllComments()
+            .onItem().transform(ignored -> Response.noContent().build()) // Return 204 No Content on success
+            .onFailure().recoverWithItem(e -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Error deleting all comments: " + e.getMessage()).build());
     }
 
     // Count all comments

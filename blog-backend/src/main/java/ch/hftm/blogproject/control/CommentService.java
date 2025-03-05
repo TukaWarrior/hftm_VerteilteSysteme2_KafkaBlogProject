@@ -6,6 +6,7 @@ import java.util.List;
 import ch.hftm.blogproject.model.entity.Comment;
 import ch.hftm.blogproject.model.dto.CommentDTO;
 import ch.hftm.blogproject.model.exception.NotFoundException;
+import ch.hftm.blogproject.repository.BlogRepository;
 import ch.hftm.blogproject.repository.CommentRepository;
 import ch.hftm.blogproject.util.CommentMapper;
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
@@ -19,6 +20,8 @@ public class CommentService {
 
     @Inject
     CommentRepository commentRepository;
+    @Inject
+    BlogRepository blogRepository;
 
     // Get all comments
     @WithSession
@@ -29,6 +32,15 @@ public class CommentService {
                 .toList());
     }
 
+    // Get all comments by blog ID
+    @WithSession
+    public Uni<List<CommentDTO>> getCommentsByBlogId(Long blogID) {
+        return commentRepository.findCommentsByBlogId(blogID)
+            .onItem().transform(comments -> comments.stream()
+            .map(CommentMapper::toCommentDTO)
+            .toList());
+    }
+
     // Get a comment by ID
     @WithSession
     public Uni<CommentDTO> getCommentById(Long commentID) {
@@ -37,13 +49,21 @@ public class CommentService {
             .onItem().transform(CommentMapper::toCommentDTO);
     }
 
+
     // Add a new comment
     @WithTransaction
     public Uni<CommentDTO> addComment(CommentDTO commentDTO) {
-        Comment comment = CommentMapper.toCommentEntity(commentDTO);
-        comment.setCreatedAt(ZonedDateTime.now());
-        return commentRepository.persistComment(comment)
-            .onItem().transform(CommentMapper::toCommentDTO);
+        if (commentDTO.getBlogID() == null) {
+         throw new IllegalArgumentException("Blog ID is required for a comment.");
+        }
+        return blogRepository.findById(commentDTO.getBlogID())
+            .onItem().ifNull().failWith(() -> new NotFoundException("Blog with ID " + commentDTO.getBlogID() + " does not exist."))
+            .chain(blog -> {
+                Comment comment = CommentMapper.toCommentEntity(commentDTO);
+                comment.setCreatedAt(ZonedDateTime.now());
+                return commentRepository.persistComment(comment)
+                    .onItem().transform(CommentMapper::toCommentDTO);
+            });
     }
 
     // Update an existing comment

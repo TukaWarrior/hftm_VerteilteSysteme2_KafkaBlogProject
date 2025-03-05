@@ -17,6 +17,11 @@ public class CommentRepository implements PanacheRepository<Comment> {
         return this.listAll(); // Returns a Uni<List<Comment>>
     }
 
+    // Get all comments by blog ID
+    public Uni<List<Comment>> findCommentsByBlogId(Long blogID) {
+        return this.list("blogID", blogID);
+    }
+
     // Get a comment by ID
     public Uni<Comment> findCommentById(Long id) {
         return this.findById(id);

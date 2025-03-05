@@ -1,5 +1,7 @@
 package ch.hftm.blogproject.util;
 
+import java.time.ZonedDateTime;
+
 import ch.hftm.blogproject.model.dto.BlogDTO;
 import ch.hftm.blogproject.model.entity.Blog;
 
@@ -10,6 +12,8 @@ public class BlogMapper {
         blogEntity.setTitle(blogDTO.getTitle());
         blogEntity.setContent(blogDTO.getContent());
         blogEntity.setCreator(blogDTO.getCreator());
+        blogEntity.setCreatedAt(blogDTO.getCreatedAt());
+        blogEntity.setLastChangedAt(ZonedDateTime.now());
         return blogEntity;
     }
 
