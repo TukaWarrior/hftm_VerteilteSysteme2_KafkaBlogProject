@@ -9,9 +9,6 @@ import ch.hftm.blogproject.model.exception.NotFoundException;
 import ch.hftm.blogproject.repository.BlogRepository;
 import ch.hftm.blogproject.repository.CommentRepository;
 import ch.hftm.blogproject.util.CommentMapper;
-import io.quarkus.hibernate.reactive.panache.common.WithSession;
-import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
-import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -24,76 +21,71 @@ public class CommentService {
     BlogRepository blogRepository;
 
     // Get all comments
-    @WithSession
-    public Uni<List<CommentDTO>> getAllComments() {
-        return commentRepository.findAllComments()
-            .onItem().transform(comments -> comments.stream()
-                .map(CommentMapper::toCommentDTO)
-                .toList());
+    public List<CommentDTO> getAllComments() {
+        return commentRepository.findAllComments().stream()
+            .map(CommentMapper::toCommentDTO)
+            .toList();
     }
 
     // Get all comments by blog ID
-    @WithSession
-    public Uni<List<CommentDTO>> getCommentsByBlogId(Long blogID) {
-        return commentRepository.findCommentsByBlogId(blogID)
-            .onItem().transform(comments -> comments.stream()
+    public List<CommentDTO> getCommentsByBlogId(Long blogID) {
+        return commentRepository.findCommentsByBlogId(blogID).stream()
             .map(CommentMapper::toCommentDTO)
-            .toList());
+            .toList();
     }
 
     // Get a comment by ID
-    @WithSession
-    public Uni<CommentDTO> getCommentById(Long commentID) {
-        return commentRepository.findCommentById(commentID)
-            .onItem().ifNull().failWith(() -> new NotFoundException("Comment with ID " + commentID + " not found."))
-            .onItem().transform(CommentMapper::toCommentDTO);
+    public CommentDTO getCommentById(Long commentID) {
+        Comment comment = commentRepository.findCommentById(commentID);
+        if (comment == null) {
+            throw new NotFoundException("Comment with ID " + commentID + " not found.");
+        }
+        return CommentMapper.toCommentDTO(comment);
     }
 
-
     // Add a new comment
-    @WithTransaction
-    public Uni<CommentDTO> addComment(CommentDTO commentDTO) {
+    public CommentDTO addComment(CommentDTO commentDTO) {
         if (commentDTO.getBlogID() == null) {
-         throw new IllegalArgumentException("Blog ID is required for a comment.");
+            throw new IllegalArgumentException("Blog ID is required for a comment.");
         }
-        return blogRepository.findById(commentDTO.getBlogID())
-            .onItem().ifNull().failWith(() -> new NotFoundException("Blog with ID " + commentDTO.getBlogID() + " does not exist."))
-            .chain(blog -> {
-                Comment comment = CommentMapper.toCommentEntity(commentDTO);
-                comment.setCreatedAt(ZonedDateTime.now());
-                return commentRepository.persistComment(comment)
-                    .onItem().transform(CommentMapper::toCommentDTO);
-            });
+        if (blogRepository.findBlogsById(commentDTO.getBlogID()) == null) {
+            throw new NotFoundException("Blog with ID " + commentDTO.getBlogID() + " does not exist.");
+        }
+        Comment comment = CommentMapper.toCommentEntity(commentDTO);
+        comment.setCreatedAt(ZonedDateTime.now());
+        commentRepository.persistComment(comment);
+        return CommentMapper.toCommentDTO(comment);
     }
 
     // Update an existing comment
-    @WithTransaction
-    public Uni<CommentDTO> updateComment(CommentDTO commentDTO) {
-        Comment comment = CommentMapper.toCommentEntity(commentDTO);
-        comment.setLastChangedAt(ZonedDateTime.now());
-        return commentRepository.updateComment(comment)
-            .onItem().ifNull().failWith(() -> new NotFoundException("Comment with ID " + commentDTO.getCommentID() + " not found."))
-            .onItem().transform(CommentMapper::toCommentDTO);
+    public CommentDTO updateComment(CommentDTO commentDTO) {
+        Comment existingComment = commentRepository.findCommentById(commentDTO.getCommentID());
+        if (existingComment == null) {
+            throw new NotFoundException("Comment with ID " + commentDTO.getCommentID() + " not found.");
+        }
+        existingComment.setContent(commentDTO.getContent());
+        existingComment.setCreator(commentDTO.getCreator());
+        existingComment.setLastChangedAt(ZonedDateTime.now());
+        commentRepository.updateComment(existingComment);
+        return CommentMapper.toCommentDTO(existingComment);
     }
 
     // Delete a comment by ID
-    @WithTransaction
-    public Uni<Void> deleteComment(Long commentID) {
-        return commentRepository.findCommentById(commentID)
-            .onItem().ifNull().failWith(() -> new NotFoundException("Comment with ID " + commentID + " not found."))
-            .onItem().transformToUni(comment -> commentRepository.deleteCommentById(commentID))
-            .replaceWithVoid();
+    public void deleteComment(Long commentID) {
+        Comment comment = commentRepository.findCommentById(commentID);
+        if (comment == null) {
+            throw new NotFoundException("Comment with ID " + commentID + " not found.");
+        }
+        commentRepository.deleteCommentById(commentID);
     }
 
     // Delete all comments
-    @WithTransaction
-    public Uni<Void> deleteAllComments() {
-        return commentRepository.deleteAllComments();
+    public void deleteAllComments() {
+        commentRepository.deleteAllComments();
     }
 
     // Count all comments
-    @WithSession
-    public Uni<Long> countComments() {
+    public Long countComments() {
         return commentRepository.countComments();
     }
 }

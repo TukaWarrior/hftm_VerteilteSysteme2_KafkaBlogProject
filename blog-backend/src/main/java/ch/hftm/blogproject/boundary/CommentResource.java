@@ -5,7 +5,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import ch.hftm.blogproject.control.CommentService;
 import ch.hftm.blogproject.model.dto.CommentDTO;
 import ch.hftm.blogproject.model.exception.NotFoundException;
-import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -28,72 +27,91 @@ public class CommentResource {
 
     // Get all comments
     @GET
-    public Uni<Response> getAllComments() {
-        return commentService.getAllComments()
-            .onItem().transform(comments -> Response.ok(comments).build())
-            .onFailure().recoverWithItem(e -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("Error fetching comments: " + e.getMessage()).build());
+    public Response getAllComments() {
+        try {
+            return Response.ok(commentService.getAllComments()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Error fetching comments: " + e.getMessage()).build();
+        }
     }
 
     // Get all comments by blog ID
     @GET
     @Path("/blog/{blogID}")
-    public Uni<Response> getCommentsByBlogId(@PathParam("blogID") Long blogID) {
-        return commentService.getCommentsByBlogId(blogID)
-            .onItem().transform(comments -> Response.ok(comments).build())
-            .onFailure().recoverWithItem(e -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-            .entity("Error fetching comments for blog ID " + blogID + ": " + e.getMessage()).build());
+    public Response getCommentsByBlogId(@PathParam("blogID") Long blogID) {
+        try {
+            return Response.ok(commentService.getCommentsByBlogId(blogID)).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Error fetching comments for blog ID " + blogID + ": " + e.getMessage()).build();
+        }
     }
 
     // Get a comment by ID
     @GET
     @Path("/{commentID}")
-    public Uni<Response> getCommentById(@PathParam("commentID") Long commentID) {
-        return commentService.getCommentById(commentID)
-            .onItem().transform(commentDTO -> Response.ok(commentDTO).build()) // Return 200 OK with the CommentDTO
-            .onFailure(NotFoundException.class).recoverWithItem(e -> Response.status(Response.Status.NOT_FOUND)
-                .entity(e.getMessage()).build()) // Return 404 if NotFoundException is thrown
-            .onFailure().recoverWithItem(e -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("Error fetching comment: " + e.getMessage()).build()); // Catch all other errors
+    public Response getCommentById(@PathParam("commentID") Long commentID) {
+        try {
+            return Response.ok(commentService.getCommentById(commentID)).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Error fetching comment: " + e.getMessage()).build();
+        }
     }
 
     // Add a new comment
     @POST
-    public Uni<Response> addComment(CommentDTO commentDTO) {
-        return commentService.addComment(commentDTO)
-            .onItem().transform(createdComment -> Response.status(Response.Status.CREATED).entity(createdComment).build()) // Return 201 Created
-            .onFailure().recoverWithItem(e -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("Error creating comment: " + e.getMessage()).build());
+    public Response addComment(CommentDTO commentDTO) {
+        try {
+            CommentDTO createdComment = commentService.addComment(commentDTO);
+            return Response.status(Response.Status.CREATED).entity(createdComment).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Error creating comment: " + e.getMessage()).build();
+        }
     }
 
     // Delete a comment by ID
     @DELETE
     @Path("/{commentID}")
-    public Uni<Response> deleteComment(@PathParam("commentID") Long commentID) {
-        return commentService.deleteComment(commentID)
-            .onItem().transform(ignored -> Response.noContent().build()) // Return 204 No Content on success
-            .onFailure(NotFoundException.class).recoverWithItem(e -> Response.status(Response.Status.NOT_FOUND)
-                .entity(e.getMessage()).build()) // Return 404 if NotFoundException is thrown
-            .onFailure().recoverWithItem(e -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("Error deleting comment: " + e.getMessage()).build()); // Catch all other errors
+    public Response deleteComment(@PathParam("commentID") Long commentID) {
+        try {
+            commentService.deleteComment(commentID);
+            return Response.noContent().build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Error deleting comment: " + e.getMessage()).build();
+        }
     }
 
     // Delete all comments
     @DELETE
-    public Uni<Response> deleteAllComments() {
-        return commentService.deleteAllComments()
-            .onItem().transform(ignored -> Response.noContent().build()) // Return 204 No Content on success
-            .onFailure().recoverWithItem(e -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("Error deleting all comments: " + e.getMessage()).build());
+    public Response deleteAllComments() {
+        try {
+            commentService.deleteAllComments();
+            return Response.noContent().build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Error deleting all comments: " + e.getMessage()).build();
+        }
     }
 
     // Count all comments
     @GET
     @Path("/count")
-    public Uni<Response> countComments() {
-        return commentService.countComments()
-            .onItem().transform(count -> Response.ok(count).build()) // Return 200 OK with the count
-            .onFailure().recoverWithItem(e -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("Error counting comments: " + e.getMessage()).build());
+    public Response countComments() {
+        try {
+            return Response.ok(commentService.countComments()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Error counting comments: " + e.getMessage()).build();
+        }
     }
 }
