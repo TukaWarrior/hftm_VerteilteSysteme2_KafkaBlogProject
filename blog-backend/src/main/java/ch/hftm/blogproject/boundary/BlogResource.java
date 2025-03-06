@@ -1,6 +1,7 @@
 package ch.hftm.blogproject.boundary;
 
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import ch.hftm.blogproject.control.BlogService;
 import ch.hftm.blogproject.model.dto.BlogDTO;
 import ch.hftm.blogproject.model.exception.NotFoundException;
@@ -63,6 +64,22 @@ public class BlogResource {
         }
     }
 
+    // @PATCH
+    // @Path("/{blogID}")
+    // public Response patchBlog(@PathParam("blogID") Long blogID, BlogDTO blogDTO) {
+    //     try {
+    //         BlogDTO updatedBlog = blogService.patchBlog(blogID, blogDTO);
+    //         return Response.ok(updatedBlog).build();
+    //     } catch (NotFoundException e) {
+    //         return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+    //     } catch (IllegalArgumentException e) {
+    //         return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+    //     } catch (Exception e) {
+    //         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+    //             .entity("Error updating blog: " + e.getMessage()).build();
+    //     }
+    // }
+
     // Delete a blog by ID
     @DELETE
     @Path("/{blogID}")
@@ -78,27 +95,27 @@ public class BlogResource {
         }
     }
 
-    // Delete all blogs
-    @DELETE
-    public Response deleteAllBlogs() {
-        try {
-            blogService.deleteAllBlogs();
-            return Response.noContent().build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("Error deleting all blogs: " + e.getMessage()).build();
-        }
-    }
+    // // Delete all blogs
+    // @DELETE
+    // public Response deleteAllBlogs() {
+    //     try {
+    //         blogService.deleteAllBlogs();
+    //         return Response.noContent().build();
+    //     } catch (Exception e) {
+    //         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+    //             .entity("Error deleting all blogs: " + e.getMessage()).build();
+    //     }
+    // }
 
-    // Count all blogs
-    @GET
-    @Path("/count")
-    public Response countBlogs() {
-        try {
-            return Response.ok(blogService.countBlogs()).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("Error counting blogs: " + e.getMessage()).build();
-        }
-    }
+    // // Count all blogs
+    // @GET
+    // @Path("/count")
+    // public Response countBlogs() {
+    //     try {
+    //         return Response.ok(blogService.countBlogs()).build();
+    //     } catch (Exception e) {
+    //         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+    //             .entity("Error counting blogs: " + e.getMessage()).build();
+    //     }
+    // }
 }
