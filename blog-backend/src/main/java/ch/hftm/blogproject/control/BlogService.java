@@ -12,6 +12,7 @@ import ch.hftm.blogproject.repository.BlogRepository;
 import ch.hftm.blogproject.util.BlogMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class BlogService {
@@ -50,11 +51,12 @@ public class BlogService {
 
     // ------------------------------| Creating |------------------------------
     // Add a new blog
+    // @Transactional
     public BlogDTO addBlog(BlogDTO blogDTO) {
         try {
             Blog blog = BlogMapper.toBlogEntity(blogDTO);
             blog.setCreatedAt(ZonedDateTime.now());
-            blog.setValidated(false);
+            blog.setValidationStatus(false);
             blogRepository.persistBlog(blog);
 
             // Send blog for validation via Kafka
@@ -68,6 +70,7 @@ public class BlogService {
 
     // ------------------------------| Updating |------------------------------
     // Update an existing blog
+    // @Transactional
     public BlogDTO updateBlog(BlogDTO blogDTO) {
         try {
             Blog blog = blogRepository.findBlogsById(blogDTO.getBlogID());
@@ -78,7 +81,7 @@ public class BlogService {
             blog.setContent(blogDTO.getContent());
             blog.setCreator(blogDTO.getCreator());
             blog.setLastChangedAt(ZonedDateTime.now());
-            blog.setValidated(false);
+            blog.setValidationStatus(false);
 
             // Send blog for validation via Kafka
             blogValidationProducer.sendBlogForValidation(blog);
@@ -94,6 +97,7 @@ public class BlogService {
 
     // ------------------------------| Deleting |------------------------------
     // Delete a blog by ID
+    // @Transactional
     public void deleteBlog(Long blogID) {
         try {
             Blog blog = blogRepository.findBlogsById(blogID);
@@ -109,6 +113,7 @@ public class BlogService {
     }
 
     // Delete all blogs
+    // @Transactional
     public void deleteAllBlogs() {
         try {
             blogRepository.deleteAllBlogs();
@@ -129,18 +134,20 @@ public class BlogService {
 
     // ------------------------------| Validation Updates |------------------------------
     // Update the validation status of a blog
-    public void updateBlogValidation(Long blogID, boolean isValidated) {
+    @Transactional
+    public void updateBlogValidationStatus(Long blogID, boolean isValidated) {
+        System.out.println(blogID);
+        System.out.println(isValidated);
+        System.out.println("updateBlogValidationStatus starting...");
+        Blog blog = blogRepository.findBlogsById(blogID);
+        if (blog == null) {
+            throw new NotFoundException("Blog with ID " + blogID + " not found.");
+        }
         try {
-            Blog blog = blogRepository.findBlogsById(blogID);
-            if (blog == null) {
-                throw new NotFoundException("Blog with ID " + blogID + " not found.");
-            }
-            blog.setValidated(isValidated);
+            blog.setValidationStatus(isValidated);
             blogRepository.updateBlog(blog);
-        } catch (NotFoundException e) {
-            throw e;
         } catch (Exception e) {
-            throw new DatabaseException("An database error occured while updating validation status for blog with ID " + blogID + " in the database.");
+            throw new DatabaseException("An database error occured while updating the validation status of blog with ID " + blogID + " in the database.");
         }
     }
 }

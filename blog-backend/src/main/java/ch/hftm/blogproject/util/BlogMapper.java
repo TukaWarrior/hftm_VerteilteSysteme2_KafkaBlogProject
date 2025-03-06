@@ -25,7 +25,7 @@ public class BlogMapper {
         blogDTO.setCreator(blogEntity.getCreator());
         blogDTO.setCreatedAt(blogEntity.getCreatedAt());
         blogDTO.setLastChangedAt(blogEntity.getLastChangedAt());
-        blogDTO.setValidated(blogEntity.isValidated());
+        blogDTO.setValidationStatus(blogEntity.getValidationStatus());
         return blogDTO;
     }
 }

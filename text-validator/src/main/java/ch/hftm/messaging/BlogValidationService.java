@@ -42,14 +42,14 @@ public class BlogValidationService {
             .put("blogID", blogID)
             .put("isValidated", isValid);
 
-            
+
 // ------------------------------| DELAY FOR TESTING PURPOSES |------------------------------
 // ------------------------------------------------------------------------------------------
 // This delay is added to visually show, that blogs in the blog-backend are initially not validated.
 // Because the entire validation and kafka messaging process is so fast, it is hard to notice without a delay.
 // Comment this delay out to run the validator in real time.
         try {
-            Thread.sleep(10000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return;
