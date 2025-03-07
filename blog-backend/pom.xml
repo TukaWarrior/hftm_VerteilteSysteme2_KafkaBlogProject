@@ -84,13 +84,6 @@
       <artifactId>quarkus-messaging-kafka</artifactId>
     </dependency>
 
-    <!-- Miscelaneous -->
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.36</version>
-    </dependency>
-    
     <!-- Testing -->
     <dependency>
       <groupId>io.rest-assured</groupId>
