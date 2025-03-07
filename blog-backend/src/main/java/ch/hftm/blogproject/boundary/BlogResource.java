@@ -33,7 +33,7 @@ public class BlogResource {
 
     // Get all blogs
     @GET
-    public Response getBlogs() {
+    public Response getAllBlogs() {
         try {
             return Response.ok(blogService.getAllBlogs()).build();
         } catch (Exception e) {

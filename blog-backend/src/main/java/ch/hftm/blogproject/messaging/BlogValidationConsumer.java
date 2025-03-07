@@ -16,14 +16,10 @@ public class BlogValidationConsumer {
 
     @Incoming("blog-validation-response")
     public void processValidationResponse(String message) {
-        System.out.println("Received blog validation response: " + message);
-
         // Parse the JSON response
         JsonObject json = new JsonObject(message);
         Long blogID = json.getLong("blogID");
         boolean isValidated = json.getBoolean("isValidated");
-        System.out.println("Parsed blogID: " + blogID + ", isValidated: " + isValidated);
-
         // Update the blog validation status in the database
         try {
             blogService.updateBlogValidationStatus(blogID, isValidated);

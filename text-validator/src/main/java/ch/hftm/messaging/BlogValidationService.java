@@ -48,7 +48,7 @@ public class BlogValidationService {
 // Because the entire validation and kafka messaging process is so fast, it is hard to notice without a delay.
 // Comment this delay out to run the validator in real time.
         try {
-            Thread.sleep(5000);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return;

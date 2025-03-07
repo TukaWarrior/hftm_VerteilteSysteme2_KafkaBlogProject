@@ -70,7 +70,7 @@ public class BlogService {
 
     // ------------------------------| Updating |------------------------------
     // Update an existing blog
-    // @Transactional
+    @Transactional
     public BlogDTO updateBlog(Long blogID, BlogDTO blogDTO) {
         try {
             Blog blog = blogRepository.findBlogsById(blogID);
@@ -82,11 +82,11 @@ public class BlogService {
             blog.setCreator(blogDTO.getCreator());
             blog.setLastChangedAt(ZonedDateTime.now());
             blog.setValidationStatus(false);
+            blogRepository.updateBlog(blog);
 
             // Send blog for validation via Kafka
             blogValidationProducer.sendBlogForValidation(blog);
-
-            blogRepository.updateBlog(blog);
+            
             return BlogMapper.toBlogDTO(blog);
         } catch (NotFoundException e) {
             throw e;
@@ -136,9 +136,6 @@ public class BlogService {
     // Update the validation status of a blog
     @Transactional
     public void updateBlogValidationStatus(Long blogID, boolean isValidated) {
-        System.out.println(blogID);
-        System.out.println(isValidated);
-        System.out.println("updateBlogValidationStatus starting...");
         Blog blog = blogRepository.findBlogsById(blogID);
         if (blog == null) {
             throw new NotFoundException("Blog with ID " + blogID + " not found.");
