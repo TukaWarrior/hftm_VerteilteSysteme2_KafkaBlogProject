@@ -16,9 +16,8 @@ public class BlogValidationService {
     // List of profane words
     private static final List<String> PROFANE_WORDS = Arrays.asList(
         "bad",
-        "badword2",
-        "offensiveword",
-        "profanity"
+        "worse",
+        "angular"
     );
 
     @Channel("blog-validation-response")

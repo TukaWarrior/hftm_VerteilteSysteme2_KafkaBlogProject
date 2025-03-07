@@ -71,11 +71,11 @@ public class BlogService {
     // ------------------------------| Updating |------------------------------
     // Update an existing blog
     // @Transactional
-    public BlogDTO updateBlog(BlogDTO blogDTO) {
+    public BlogDTO updateBlog(Long blogID, BlogDTO blogDTO) {
         try {
-            Blog blog = blogRepository.findBlogsById(blogDTO.getBlogID());
+            Blog blog = blogRepository.findBlogsById(blogID);
             if (blog == null) {
-                throw new NotFoundException("Blog with ID " + blogDTO.getBlogID() + " not found.");
+                throw new NotFoundException("Blog with ID " + blogID + " not found.");
             }
             blog.setTitle(blogDTO.getTitle());
             blog.setContent(blogDTO.getContent());

@@ -17,6 +17,7 @@ public class BlogDTO {
     private String title;
     @NotBlank(message = "Content cannot be empty")
     private String content;
+    @NotBlank(message = "Creator cannot be empty")
     private String creator;
     private ZonedDateTime createdAt;
     private ZonedDateTime lastChangedAt;
