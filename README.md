@@ -67,7 +67,20 @@ When creating a new blog, its validation status will be set to false.
 The backend will message the blog to the text-validator, which will check it against a list of banned words. 
 If none of the banned words are present in the blogts title or content, the response will be valid, after which the blog-backend updates the validation status of the blog in the database. 
 
+**Delay for testing**
+
 To demonstrate this more clearly, the validation process in the text-validator has a build in delay of 10 seconds. This gives the user time to post a blog, check that the validation status is set to false, and see it set to true 10 seconds later. Without a delay, these operations happen to fast to observe. 
+
+
+To disable the delay, comment out the following code in BlogValidationService.java in the text-validator application.
+```java
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
+        }
+```
 
 
 
