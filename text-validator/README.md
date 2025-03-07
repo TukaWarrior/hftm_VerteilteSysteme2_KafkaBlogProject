@@ -1,67 +1,40 @@
 # text-validator
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+The Blog Validation Service is a Quarkus-based microservice that validates blogs from the blog-backend for profanity. 
+It communicates using apache kafka. 
+It listens to a kafka topic for incomming blog validation requests, processes the content, and sends validation responses to another kafka topic.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+# Github Package
+Install from the command line:
+```sh
+docker pull ghcr.io/tukawarrior/text-validator:latest
+```
+or 
 
-## Running the application in dev mode
+Download from this URL:
 
-You can run your application in dev mode that enables live coding using:
+ghcr.io/tukawarrior/text-validator
+
+
+# Running the application in dev mode
+
+You can run your application in dev mode: 
 
 ```shell script
 ./mvnw quarkus:dev
 ```
+Quarkus dev UI: 
+http://localhost:8080/q/dev/
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+# Delay for testing
+The validation process has a build in delay from 10 seconds. This is used to make it visible in the blog backend that the blogs are first persisted with the validation status set to false. The delay gives time for the user to retrieve the blogs while the validation response is still missing. 
 
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
-./mvnw package
+To disable the delay, comment out the following code in BlogValidationService.java
+```java
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
+        }
 ```
-
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/text-validator-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- Messaging - Kafka Connector ([guide](https://quarkus.io/guides/kafka-getting-started)): Connect to Kafka with Reactive Messaging
-
-## Provided Code
-
-### Messaging codestart
-
-Use Quarkus Messaging
-
-[Related Apache Kafka guide section...](https://quarkus.io/guides/kafka-reactive-getting-started)
-
