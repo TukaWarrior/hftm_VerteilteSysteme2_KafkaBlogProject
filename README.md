@@ -11,7 +11,7 @@ Each application can be found in their respective subfolders.
 - [**Java 21**](https://adoptium.net/)
 - [**Maven**](https://maven.apache.org/)
 - [**Docker**](https://www.docker.com/) (must be running)
-- 
+
 ## Downloading the application
 You can clone / download the repository. 
 
