@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import ch.hftm.blogproject.model.entity.Image;
+import ch.hftm.blogproject.model.entity.ExampleImage;
 import ch.hftm.blogproject.repository.ImageRepository;
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
@@ -19,7 +19,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class ImageService {
+public class ExampleImageService {
     
     @Inject
     MinioClient minioClient;
@@ -30,7 +30,7 @@ public class ImageService {
     private static final String BUCKET_NAME = "test-images"; 
 
     @Transactional
-    public Image uploadImage(String fileName, InputStream fileStream, long fileSize, String contentType) {
+    public ExampleImage uploadImage(String fileName, InputStream fileStream, long fileSize, String contentType) {
         try (InputStream stream = fileStream) { // Ensure the InputStream is closed
             // Upload the file to MinIO
             minioClient.putObject(
@@ -43,7 +43,7 @@ public class ImageService {
             );
 
             // Save metadata in the database
-            Image image = new Image(fileName, contentType);
+            ExampleImage image = new ExampleImage(fileName, contentType);
             imageRepository.persist(image);
 
             return image;

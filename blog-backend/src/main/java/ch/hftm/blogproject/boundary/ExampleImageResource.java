@@ -4,26 +4,26 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.jboss.resteasy.reactive.RestForm;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
-import ch.hftm.blogproject.control.ImageService;
-import ch.hftm.blogproject.model.entity.Image;
+import ch.hftm.blogproject.control.ExampleImageService;
+import ch.hftm.blogproject.model.entity.ExampleImage;
 import io.smallrye.common.annotation.Blocking;
-import jakarta.ws.rs.Produces;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import org.jboss.resteasy.reactive.multipart.FileUpload;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 
 @Path("/images")
-public class ImageResource {
+public class ExampleImageResource {
 
-    @Inject ImageService imageService;
+    @Inject ExampleImageService imageService;
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
@@ -39,7 +39,7 @@ public class ImageResource {
             java.nio.file.Path uploadedFilePath = fileUpload.uploadedFile(); // Fully qualified name
             try (InputStream fileStream = new FileInputStream(uploadedFilePath.toFile())) {
                 // Upload the file
-                Image image = imageService.uploadImage(fileName, fileStream, fileSize, contentType);
+                ExampleImage image = imageService.uploadImage(fileName, fileStream, fileSize, contentType);
                 return Response.status(Response.Status.CREATED).entity(image).build();
             }
         } catch (Exception e) {

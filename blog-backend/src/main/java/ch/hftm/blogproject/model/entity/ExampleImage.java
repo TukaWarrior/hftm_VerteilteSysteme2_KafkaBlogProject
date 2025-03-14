@@ -6,7 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Image {
+public class ExampleImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,9 +15,9 @@ public class Image {
     private String contentType;
 
     // Constructors
-    public Image(){}
+    public ExampleImage(){}
 
-    public Image(String fileName, String contentType){
+    public ExampleImage(String fileName, String contentType){
         this.fileName = fileName;
         this.contentType = contentType;
     }
