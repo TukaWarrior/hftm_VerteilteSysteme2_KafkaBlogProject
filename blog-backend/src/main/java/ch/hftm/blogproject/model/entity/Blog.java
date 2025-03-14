@@ -9,9 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-// @Data
-// @NoArgsConstructor
-// @AllArgsConstructor
 public class Blog {
 
     @Id

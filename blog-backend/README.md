@@ -60,3 +60,12 @@ To disable the delay, comment out the following code in BlogValidationService.ja
             return;
         }
 ```
+
+
+
+# Useful Links
+MiniIO Application Properties Configuratio Reference
+https://docs.quarkiverse.io/quarkus-minio/dev/index.html#_native_support_only
+
+# Talking Points for presentation
+MiniIo requires fileSize and fileTZype as separate parameters
