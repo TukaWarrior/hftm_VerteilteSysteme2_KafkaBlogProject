@@ -1,92 +1,84 @@
 package ch.hftm.blogproject.control;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.ZonedDateTime;
+
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import ch.hftm.blogproject.model.dto.FileDTO;
 import ch.hftm.blogproject.model.entity.File;
 import ch.hftm.blogproject.model.exception.DatabaseException;
 import ch.hftm.blogproject.model.exception.NotFoundException;
 import ch.hftm.blogproject.repository.FileRepository;
-import ch.hftm.blogproject.util.FileMapper;
+import ch.hftm.blogproject.util.FileUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-
 @ApplicationScoped
 public class FileService {
 
     @Inject
     FileRepository fileRepository;
 
-    // ------------------------------| Fetching |------------------------------
-    // Get a file by filename
-    public FileDTO getFileById(Long id) {
-        try {
-            File file = fileRepository.findFileById(id);
-            if (file == null) {
-                throw new NotFoundException("File with ID " + id + " not found.");
-            }
-            return FileMapper.toFileDTO(file);
-        } catch (NotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new DatabaseException("An database error occured while fetching file with ID " + id + " from the database.");
-        }
-    }
+    @Inject
+    FileMinioService fileMinioService;
 
-    // Get a file by filename
-    public FileDTO getFileByFilename(String filename) {
-        try {
-            File file = fileRepository.findFileByFileName(filename);
-            if (file == null) {
-                throw new NotFoundException("File with filename " + filename + " not found.");
-            }
-            return FileMapper.toFileDTO(file);
-        } catch (NotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new DatabaseException("An database error occured while fetching file with name " + filename + " from the database.");
-        }
-    }
+    @Inject
+    FileUtils fileUtils;
 
-    // ------------------------------| Creating |------------------------------
-    // Add a new file
     @Transactional
-    public FileDTO saveFile(FileDTO fileDTO) {
-        try{
-            File file = FileMapper.toFileEntity(fileDTO);
+    public void uploadFile(FileUpload fileUpload) {
+        try {
+            File file = new File();
+            file.setFileName(fileUpload.fileName());
+            file.setContentType(fileUpload.contentType());
+            file.setFileSize(fileUpload.size());
             file.setUploadDate(ZonedDateTime.now());
+
+            // Saves the File entity and returns the entity with the id set by the database.
             fileRepository.saveFile(file);
-            return FileMapper.toFileDTO(file);
+
+            // Upload the file to MinIO
+            fileMinioService.uploadFile(file, fileUpload);
         } catch (Exception e) {
-            throw new DatabaseException("An database error occured while adding a new file to the database.");
-        }   
+            throw new DatabaseException("Failed to upload file: " + e.getMessage());
+        }
     }
 
-    // ------------------------------| Deleting |------------------------------
-    // Delete a file by id.
+    public FileDTO getFileWithData(Long id) {
+        File file = fileRepository.findFileById(id);
+        if (file == null) {
+            throw new NotFoundException("File with ID " + id + " not found.");
+        }
+
+        try (InputStream fileStream = fileMinioService.getFile(file.getStorageKey())) {
+            byte[] fileData = fileStream.readAllBytes();
+            return FileMapperOld.toFileDTOWithFileData(file, fileData);
+        } catch (Exception e) {
+            throw new DatabaseException("Failed to retrieve file data: " + e.getMessage());
+        }
+    }
+
+    public FileDTO getFileMetadata(Long id) {
+        File file = fileRepository.findFileById(id);
+        if (file == null) {
+            throw new NotFoundException("File with ID " + id + " not found.");
+        }
+        return FileMapperOld.toFileDTO(file);
+    }
+
     @Transactional
-    public void deleteFile(Long fileId) {
-        try {
-            File file = fileRepository.findFileById(fileId);
-            if (file == null) {
-                throw new NotFoundException("File with ID " + fileId + " not found.");
-            }
-            fileRepository.deleteFileById(fileId);
-        } catch (NotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new DatabaseException("An database error occured while deleting file with ID " + fileId + " from the database.");
+    public void deleteFile(Long id) throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException {
+        File file = fileRepository.findFileById(id);
+        if (file == null) {
+            throw new NotFoundException("File with ID " + id + " not found.");
         }
-    }
 
-    // Delete all files
-    public void deleteAllFiles() {
-        try {
-            fileRepository.deleteAllFiles();
-        } catch (Exception e) {
-            throw new DatabaseException("An database error occured while deleting all files from the database.");
-        }
+        fileMinioService.deleteFile(file.getStorageKey());
+        fileRepository.deleteFileById(id);
     }
 
     // ------------------------------| Utility Methods |------------------------------
@@ -95,7 +87,7 @@ public class FileService {
         try {
             return fileRepository.countFiles();
         } catch (Exception e) {
-            throw new DatabaseException("An database error occured while counting files in the database.");
+            throw new DatabaseException("An error occurred while counting files in the database.");
         }
     }
 }

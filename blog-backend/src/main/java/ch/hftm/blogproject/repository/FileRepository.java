@@ -9,8 +9,9 @@ import jakarta.transaction.Transactional;
 public class FileRepository implements PanacheRepository<File>{
 
     @Transactional
-    public void saveFile(File file) {
+    public File saveFile(File file) {
         persist(file);
+        return file;
     }
 
     public File findFileById(Long fileId) {

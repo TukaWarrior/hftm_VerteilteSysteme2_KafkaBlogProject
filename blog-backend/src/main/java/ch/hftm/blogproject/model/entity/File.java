@@ -13,21 +13,19 @@ public class File {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String fileName;
-    private String fileType;
+    private String contentType;
     private Long fileSize;
     private ZonedDateTime uploadDate;
-    private String storageKey;
     private String checksum;
 
     // Constructors
     public File() {}
 
-    public File(String fileName, String fileType, Long fileSize, ZonedDateTime uploadDate, String storageKey, String checksum) {
+    public File(String fileName, String contentType, Long fileSize, ZonedDateTime uploadDate, String checksum) {
         this.fileName = fileName;
-        this.fileType = fileType;
+        this.contentType = contentType;
         this.fileSize = fileSize;
         this.uploadDate = uploadDate;
-        this.storageKey = storageKey;
         this.checksum = checksum;
     }
 
@@ -44,11 +42,11 @@ public class File {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-    public String getFileType() {
-        return this.fileType;
+    public String getContentType() {
+        return this.contentType;
     }
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
     public Long getFileSize() {
         return this.fileSize;
@@ -61,12 +59,6 @@ public class File {
     }
     public void setUploadDate(ZonedDateTime uploadDate) {
         this.uploadDate = uploadDate;
-    }
-    public String getStorageKey() {
-        return this.storageKey;
-    }
-    public void setStorageKey(String storageKey) {
-        this.storageKey = storageKey;
     }
     public String getChecksum() {
         return this.checksum;
