@@ -106,7 +106,7 @@ public class BlogService {
             }
             blogRepository.deleteBlogById(blogID);
         } catch (NotFoundException e) {
-            throw e; // Re-throw NotFoundException as it is not a database error
+            throw e;
         } catch (Exception e) {
             throw new DatabaseException("An database error occured while deleting blog with ID " + blogID + " from the database.");
         }
