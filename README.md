@@ -25,7 +25,7 @@ Each application can be found in their respective subfolders.
     - [Running the blog-backend:](#running-the-blog-backend)
     - [Running the text-validator:](#running-the-text-validator)
 - [Accessing the Webviews](#accessing-the-webviews)
-  - [Testing the application:](#testing-the-application)
+- [Testing the application - Kafka Communication for blogs](#testing-the-application---kafka-communication-for-blogs)
 - [Testing the application - Storage bucket for files](#testing-the-application---storage-bucket-for-files)
   - [Things to know about implementing file storage](#things-to-know-about-implementing-file-storage)
 - [Notes:](#notes)
@@ -82,7 +82,7 @@ After the project has been started, the following two links should be accessible
 
 **Others:**          To access the webUI for the MinIO storage bucket or the mysql database, use the links generated in the quarkus dev ui. 
 
-## Testing the application: 
+# Testing the application - Kafka Communication for blogs 
 
 After starting up booth applications and entering swagger UI, you can access these http endpoints.
 
