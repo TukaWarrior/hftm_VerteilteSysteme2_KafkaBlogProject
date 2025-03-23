@@ -15,6 +15,22 @@ A validation service that takes incomming blogs and checks if they contain profa
 
 Each application can be found in their respective subfolders. 
 
+# Table of Contents
+
+- [Overview](#overview)
+- [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+  - [Downloading the application](#downloading-the-application)
+  - [Running the applications](#running-the-applications)
+    - [Running the blog-backend:](#running-the-blog-backend)
+    - [Running the text-validator:](#running-the-text-validator)
+- [Accessing the Webviews](#accessing-the-webviews)
+  - [Testing the application:](#testing-the-application)
+- [Testing the application - Storage bucket for files](#testing-the-application---storage-bucket-for-files)
+  - [Things to know about implementing file storage](#things-to-know-about-implementing-file-storage)
+- [Notes:](#notes)
+
+
 ## Prerequisites
 - [**Java 21**](https://adoptium.net/)
 - [**Maven**](https://maven.apache.org/)
