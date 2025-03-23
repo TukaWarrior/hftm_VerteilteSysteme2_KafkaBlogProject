@@ -40,7 +40,7 @@ public class BlogDTO {
 
     // Getters and Setters
     public Long getBlogID() {
-        return blogID;
+        return this.blogID;
     }
 
     public void setBlogID(Long blogID) {
@@ -48,7 +48,7 @@ public class BlogDTO {
     }
 
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
     public void setTitle(String title) {
@@ -56,7 +56,7 @@ public class BlogDTO {
     }
 
     public String getContent() {
-        return content;
+        return this.content;
     }
 
     public void setContent(String content) {
@@ -64,7 +64,7 @@ public class BlogDTO {
     }
 
     public String getCreator() {
-        return creator;
+        return this.creator;
     }
 
     public void setCreator(String creator) {
@@ -72,7 +72,7 @@ public class BlogDTO {
     }
 
     public ZonedDateTime getCreatedAt() {
-        return createdAt;
+        return this.createdAt;
     }
 
     public void setCreatedAt(ZonedDateTime createdAt) {
@@ -80,7 +80,7 @@ public class BlogDTO {
     }
 
     public ZonedDateTime getLastChangedAt() {
-        return lastChangedAt;
+        return this.lastChangedAt;
     }
 
     public void setLastChangedAt(ZonedDateTime lastChangedAt) {
@@ -88,7 +88,7 @@ public class BlogDTO {
     }
 
     public boolean getValidationStatus() {
-        return validationStatus;
+        return this.validationStatus;
     }
 
     public void setValidationStatus(boolean validationStatus) {

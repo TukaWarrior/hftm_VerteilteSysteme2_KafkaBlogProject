@@ -3,12 +3,14 @@ package ch.hftm.blogproject.util;
 import java.time.ZonedDateTime;
 
 import ch.hftm.blogproject.model.dto.BlogDTO;
-import ch.hftm.blogproject.model.entity.Blog;
+import ch.hftm.blogproject.model.entity.BlogEntity;
+import jakarta.enterprise.context.ApplicationScoped;
 
+@ApplicationScoped
 public class BlogMapper {
 
-    public static Blog toBlogEntity(BlogDTO blogDTO) {
-        Blog blogEntity = new Blog();
+    public BlogEntity toBlogEntity(BlogDTO blogDTO) {
+        BlogEntity blogEntity = new BlogEntity();
         blogEntity.setTitle(blogDTO.getTitle());
         blogEntity.setContent(blogDTO.getContent());
         blogEntity.setCreator(blogDTO.getCreator());
@@ -17,7 +19,7 @@ public class BlogMapper {
         return blogEntity;
     }
 
-    public static BlogDTO toBlogDTO(Blog blogEntity) {
+    public BlogDTO toBlogDTO(BlogEntity blogEntity) {
         BlogDTO blogDTO = new BlogDTO();
         blogDTO.setBlogID(blogEntity.getBlogID());
         blogDTO.setTitle(blogEntity.getTitle());

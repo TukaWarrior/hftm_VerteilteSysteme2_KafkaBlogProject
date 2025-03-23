@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>ch.hftm</groupId>
   <artifactId>blogproject</artifactId>
   <version>1.0.0-SNAPSHOT</version>
+
+<!-- ============================== PROJECT PROPERTIES ============================== -->
   <properties>
     <compiler-plugin.version>3.14.0</compiler-plugin.version>
     <maven.compiler.release>21</maven.compiler.release>
@@ -17,6 +18,7 @@
     <surefire-plugin.version>3.5.2</surefire-plugin.version>
   </properties>
 
+<!-- ============================== DEPENDENCY MANAGEMENT ============================== -->
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -28,16 +30,13 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+<!-- ============================== DEPENDENCIES ============================== -->
   <dependencies>
-
-    
-
-    
-
+  <!-- Docker -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-container-image-docker</artifactId>
-      <!-- <version>3.15.0.CR1</version> -->
     </dependency>
 
     <!-- Quarkus -->
@@ -84,13 +83,19 @@
       <artifactId>quarkus-messaging-kafka</artifactId>
     </dependency>
 
+    <!-- File Upload -->
+    <dependency>
+      <groupId>io.quarkiverse.minio</groupId>
+      <artifactId>quarkus-minio</artifactId>
+      <version>3.7.7</version>
+    </dependency>
+
     <!-- Testing -->
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
@@ -99,6 +104,7 @@
 
   </dependencies>
 
+<!-- ============================== BUILD ============================== -->
   <build>
     <plugins>
       <plugin>
@@ -156,7 +162,10 @@
       </plugin>
     </plugins>
   </build>
+
+<!-- ============================== PROFILES ============================== -->
   <profiles>
+    <!-- Native profile -->
     <profile>
       <id>native</id>
       <activation>
@@ -170,4 +179,5 @@
       </properties>
     </profile>
   </profiles>
+
 </project>

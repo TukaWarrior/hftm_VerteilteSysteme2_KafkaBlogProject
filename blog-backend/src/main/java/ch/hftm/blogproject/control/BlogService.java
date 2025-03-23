@@ -5,7 +5,7 @@ import java.util.List;
 
 import ch.hftm.blogproject.messaging.BlogValidationProducer;
 import ch.hftm.blogproject.model.dto.BlogDTO;
-import ch.hftm.blogproject.model.entity.Blog;
+import ch.hftm.blogproject.model.entity.BlogEntity;
 import ch.hftm.blogproject.model.exception.DatabaseException;
 import ch.hftm.blogproject.model.exception.NotFoundException;
 import ch.hftm.blogproject.repository.BlogRepository;
@@ -21,40 +21,42 @@ public class BlogService {
     BlogRepository blogRepository;
     @Inject
     BlogValidationProducer blogValidationProducer;
+    @Inject
+    BlogMapper blogMapper;
     
-    // ------------------------------| Fetching |------------------------------
+    // ========================================| Retrieval Methods |========================================
     // Get all blogs
     public List<BlogDTO> getAllBlogs() {
         try {
             return blogRepository.findAllBlogs().stream()
-                .map(BlogMapper::toBlogDTO)
+                .map(blogMapper::toBlogDTO)
                 .toList();
         } catch (Exception e) {
-            throw new DatabaseException("Error fetching all blogs from the database.");
+            throw new DatabaseException("Failed to retrieve all blogs from the database.");
         }
     }
 
     // Get a blog by ID
     public BlogDTO getBlogById(Long blogID) {
         try {
-            Blog blog = blogRepository.findBlogsById(blogID);
+            BlogEntity blog = blogRepository.findBlogsById(blogID);
             if (blog == null) {
-                throw new NotFoundException("Blog with ID " + blogID + " not found.");
+                throw new NotFoundException("Blog not found with ID: " + blogID);
             }
-            return BlogMapper.toBlogDTO(blog);
+            return blogMapper.toBlogDTO(blog);
         } catch (NotFoundException e) {
-            throw e; // Re-throw NotFoundException as it is not a database error
+            throw e;
         } catch (Exception e) {
-            throw new DatabaseException("An database error occured while fetching blog with ID " + blogID + " from the database.");
+            throw new DatabaseException("Failed to retrieve blog from the database. Blog ID: " + blogID);
         }
     }
 
-    // ------------------------------| Creating |------------------------------
+    // ========================================| Creating Methods |========================================
     // Add a new blog
     // @Transactional
     public BlogDTO addBlog(BlogDTO blogDTO) {
         try {
-            Blog blog = BlogMapper.toBlogEntity(blogDTO);
+            BlogEntity blog = blogMapper.toBlogEntity(blogDTO);
             blog.setCreatedAt(ZonedDateTime.now());
             blog.setValidationStatus(false);
             blogRepository.persistBlog(blog);
@@ -62,20 +64,20 @@ public class BlogService {
             // Send blog for validation via Kafka
             blogValidationProducer.sendBlogForValidation(blog);
 
-            return BlogMapper.toBlogDTO(blog);
+            return blogMapper.toBlogDTO(blog);
         } catch (Exception e) {
-            throw new DatabaseException("An database error occured while adding a new blog to the database.");
+            throw new DatabaseException("Failed to create new blog in the database.");
         }
     }
 
-    // ------------------------------| Updating |------------------------------
+    // ========================================| Updating Methods |========================================
     // Update an existing blog
     @Transactional
     public BlogDTO updateBlog(Long blogID, BlogDTO blogDTO) {
         try {
-            Blog blog = blogRepository.findBlogsById(blogID);
+            BlogEntity blog = blogRepository.findBlogsById(blogID);
             if (blog == null) {
-                throw new NotFoundException("Blog with ID " + blogID + " not found.");
+                throw new NotFoundException("Blog not found with ID: " + blogID);
             }
             blog.setTitle(blogDTO.getTitle());
             blog.setContent(blogDTO.getContent());
@@ -87,28 +89,28 @@ public class BlogService {
             // Send blog for validation via Kafka
             blogValidationProducer.sendBlogForValidation(blog);
             
-            return BlogMapper.toBlogDTO(blog);
+            return blogMapper.toBlogDTO(blog);
         } catch (NotFoundException e) {
             throw e;
         } catch (Exception e) {
-            throw new DatabaseException("An database error occured while updating blog with ID " + blogDTO.getBlogID() + " in the database.");
+            throw new DatabaseException("Failed to update blog in the database. Blog ID: " + blogID);
         }
     }
 
-    // ------------------------------| Deleting |------------------------------
+    // ========================================| Deleting Methods |========================================
     // Delete a blog by ID
     // @Transactional
     public void deleteBlog(Long blogID) {
         try {
-            Blog blog = blogRepository.findBlogsById(blogID);
+            BlogEntity blog = blogRepository.findBlogsById(blogID);
             if (blog == null) {
-                throw new NotFoundException("Blog with ID " + blogID + " not found.");
+                throw new NotFoundException("Blog not found with ID: " + blogID);
             }
             blogRepository.deleteBlogById(blogID);
         } catch (NotFoundException e) {
-            throw e; // Re-throw NotFoundException as it is not a database error
+            throw e;
         } catch (Exception e) {
-            throw new DatabaseException("An database error occured while deleting blog with ID " + blogID + " from the database.");
+            throw new DatabaseException("Failed to delete blog from the database. Blog ID: " + blogID);
         }
     }
 
@@ -118,33 +120,33 @@ public class BlogService {
         try {
             blogRepository.deleteAllBlogs();
         } catch (Exception e) {
-            throw new DatabaseException("An database error occured while deleting all blogs from the database.");
+            throw new DatabaseException("Failed to delete all blogs from the database.");
         }
     }
 
-    // ------------------------------| Utility Methods |------------------------------
+    // ========================================| Utility Methods |========================================
     // Count all blogs
     public Long countBlogs() {
         try {
             return blogRepository.countBlogs();
         } catch (Exception e) {
-            throw new DatabaseException("An database error occured while counting blogs in the database.");
+            throw new DatabaseException("Failed to count blogs in the database.");
         }
     }
 
-    // ------------------------------| Validation Updates |------------------------------
+    // ========================================| Validation Updates |========================================
     // Update the validation status of a blog
     @Transactional
     public void updateBlogValidationStatus(Long blogID, boolean isValidated) {
-        Blog blog = blogRepository.findBlogsById(blogID);
+        BlogEntity blog = blogRepository.findBlogsById(blogID);
         if (blog == null) {
-            throw new NotFoundException("Blog with ID " + blogID + " not found.");
+            throw new NotFoundException("Blog not found with ID: " + blogID);
         }
         try {
             blog.setValidationStatus(isValidated);
             blogRepository.updateBlog(blog);
         } catch (Exception e) {
-            throw new DatabaseException("An database error occured while updating the validation status of blog with ID " + blogID + " in the database.");
+            throw new DatabaseException("Failed to update validation status in the database. Blog ID: " + blogID);
         }
     }
 }
