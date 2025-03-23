@@ -66,6 +66,39 @@ To disable the delay, comment out the following code in BlogValidationService.ja
 # Useful Links
 MiniIO Application Properties Configuratio Reference
 https://docs.quarkiverse.io/quarkus-minio/dev/index.html#_native_support_only
+https://min.io/docs/minio/linux/developers/java/API.html
+
+# Maby todo
+Diagram with storage layer, business logic layer, http layer.
+
 
 # Talking Points for presentation
 MiniIo requires fileSize and fileTZype as separate parameters
+
+File Name: Minio uses filename as unique identifier. Using the id of the file entity in mysql in minio filename requires an additional database call to retrieve the it, as the id gets set on the database when creating the entity. Solution is to use a uuid in minios filename. Alternatively, the upload date. 
+
+File SIze Limit imposed by most HTTP Servers and Clients to about 10MB. Uploading greater files requires a multipart upload. 
+
+
+
+
+
+In enterprise applications:
+For large files (>10MB):
+
+StreamingOutput is the recommended approach in JAX-RS
+Clearly defined ownership of stream lifecycle
+Single responsibility for stream management
+For small/medium files:
+
+ByteArray approach is often cleaner and safer
+Eliminates stream management concerns
+For files with unknown size:
+
+Temporary file approach (save to disk first) offers a balance
+Recommendation for Your Application
+Based on your structure:
+
+If your files are typically small (<10MB), use the byte array approach
+If your files can be large, use StreamingOutput in your resource layer
+Either way, minimize stream passing between methods

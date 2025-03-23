@@ -1,30 +1,36 @@
 package ch.hftm.blogproject.repository;
 
-import ch.hftm.blogproject.model.entity.File;
+import java.util.List;
+
+import ch.hftm.blogproject.model.entity.FileMetadataEntity;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class FileRepository implements PanacheRepository<File>{
+public class FileMetadataRepository implements PanacheRepository<FileMetadataEntity>{
 
     @Transactional
-    public File saveFile(File file) {
+    public FileMetadataEntity persistFile(FileMetadataEntity file) {
         persist(file);
         return file;
     }
 
-    public File findFileById(Long fileId) {
-        return find("fileId", fileId).firstResult();
+    public List<FileMetadataEntity> findAllFiles() {
+        return this.listAll();
     }
 
-    public File findFileByFileName(String fileName) {
+    public FileMetadataEntity findFileById(Long fileId) {
+        return findById(fileId);
+    }
+
+    public FileMetadataEntity findFileByFileName(String fileName) {
         return find("fileName", fileName).firstResult();
     }
 
     @Transactional
     public void deleteFileById(Long fileId) {
-        delete("fileId", fileId);
+        delete("id", fileId);
     }
 
     // Delete all files

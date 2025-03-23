@@ -3,7 +3,7 @@ package ch.hftm.blogproject.messaging;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
-import ch.hftm.blogproject.model.entity.Blog;
+import ch.hftm.blogproject.model.entity.BlogEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -12,7 +12,7 @@ public class BlogValidationProducer {
     @Channel("blog-validation-request")
     Emitter<String> emitter;
 
-    public void sendBlogForValidation(Blog blog) {
+    public void sendBlogForValidation(BlogEntity blog) {
         // Create a JSON representation of the blog data
         String message = String.format(
             "{\"blogID\":%d,\"title\":\"%s\",\"content\":\"%s\"}",

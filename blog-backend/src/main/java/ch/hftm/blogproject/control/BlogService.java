@@ -5,7 +5,7 @@ import java.util.List;
 
 import ch.hftm.blogproject.messaging.BlogValidationProducer;
 import ch.hftm.blogproject.model.dto.BlogDTO;
-import ch.hftm.blogproject.model.entity.Blog;
+import ch.hftm.blogproject.model.entity.BlogEntity;
 import ch.hftm.blogproject.model.exception.DatabaseException;
 import ch.hftm.blogproject.model.exception.NotFoundException;
 import ch.hftm.blogproject.repository.BlogRepository;
@@ -37,7 +37,7 @@ public class BlogService {
     // Get a blog by ID
     public BlogDTO getBlogById(Long blogID) {
         try {
-            Blog blog = blogRepository.findBlogsById(blogID);
+            BlogEntity blog = blogRepository.findBlogsById(blogID);
             if (blog == null) {
                 throw new NotFoundException("Blog with ID " + blogID + " not found.");
             }
@@ -54,7 +54,7 @@ public class BlogService {
     // @Transactional
     public BlogDTO addBlog(BlogDTO blogDTO) {
         try {
-            Blog blog = BlogMapper.toBlogEntity(blogDTO);
+            BlogEntity blog = BlogMapper.toBlogEntity(blogDTO);
             blog.setCreatedAt(ZonedDateTime.now());
             blog.setValidationStatus(false);
             blogRepository.persistBlog(blog);
@@ -73,7 +73,7 @@ public class BlogService {
     @Transactional
     public BlogDTO updateBlog(Long blogID, BlogDTO blogDTO) {
         try {
-            Blog blog = blogRepository.findBlogsById(blogID);
+            BlogEntity blog = blogRepository.findBlogsById(blogID);
             if (blog == null) {
                 throw new NotFoundException("Blog with ID " + blogID + " not found.");
             }
@@ -100,7 +100,7 @@ public class BlogService {
     // @Transactional
     public void deleteBlog(Long blogID) {
         try {
-            Blog blog = blogRepository.findBlogsById(blogID);
+            BlogEntity blog = blogRepository.findBlogsById(blogID);
             if (blog == null) {
                 throw new NotFoundException("Blog with ID " + blogID + " not found.");
             }
@@ -136,7 +136,7 @@ public class BlogService {
     // Update the validation status of a blog
     @Transactional
     public void updateBlogValidationStatus(Long blogID, boolean isValidated) {
-        Blog blog = blogRepository.findBlogsById(blogID);
+        BlogEntity blog = blogRepository.findBlogsById(blogID);
         if (blog == null) {
             throw new NotFoundException("Blog with ID " + blogID + " not found.");
         }

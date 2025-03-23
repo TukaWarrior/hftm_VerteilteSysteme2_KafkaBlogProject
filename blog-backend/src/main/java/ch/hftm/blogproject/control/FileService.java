@@ -1,89 +1,146 @@
 package ch.hftm.blogproject.control;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.UUID;
 
+import org.jboss.resteasy.reactive.multipart.FileDownload;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
-import ch.hftm.blogproject.model.dto.FileDTO;
-import ch.hftm.blogproject.model.entity.File;
+import ch.hftm.blogproject.model.dto.FileMetadataDTO;
+import ch.hftm.blogproject.model.entity.FileMetadataEntity;
 import ch.hftm.blogproject.model.exception.DatabaseException;
 import ch.hftm.blogproject.model.exception.NotFoundException;
-import ch.hftm.blogproject.repository.FileRepository;
-import ch.hftm.blogproject.util.FileUtils;
+import ch.hftm.blogproject.repository.FileMetadataRepository;
+import ch.hftm.blogproject.util.FileMetadataMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+
 @ApplicationScoped
 public class FileService {
 
     @Inject
-    FileRepository fileRepository;
+    FileMetadataRepository fileRepository;
 
     @Inject
     FileMinioService fileMinioService;
 
     @Inject
-    FileUtils fileUtils;
+    FileMetadataMapper fileMetadataMapper;
+
+    // ------------------------------| Create Methods |------------------------------
 
     @Transactional
-    public void uploadFile(FileUpload fileUpload) {
+    public FileMetadataDTO uploadFile(FileUpload fileUpload) {
         try {
-            File file = new File();
-            file.setFileName(fileUpload.fileName());
-            file.setContentType(fileUpload.contentType());
-            file.setFileSize(fileUpload.size());
-            file.setUploadDate(ZonedDateTime.now());
-
+            FileMetadataEntity fileMetadataEntity = new FileMetadataEntity();
+            fileMetadataEntity.setFileName(UUID.randomUUID().toString() + "_" + fileUpload.fileName());
+            fileMetadataEntity.setContentType(fileUpload.contentType());
+            fileMetadataEntity.setFileSize(fileUpload.size());
+            fileMetadataEntity.setUploadDate(ZonedDateTime.now());
             // Saves the File entity and returns the entity with the id set by the database.
-            fileRepository.saveFile(file);
-
+            fileRepository.persistFile(fileMetadataEntity);
             // Upload the file to MinIO
-            fileMinioService.uploadFile(file, fileUpload);
+            fileMinioService.uploadFile(fileUpload, fileMetadataEntity);
+            return fileMetadataMapper.toFileMetadataDTO(fileMetadataEntity);
         } catch (Exception e) {
             throw new DatabaseException("Failed to upload file: " + e.getMessage());
         }
     }
 
-    public FileDTO getFileWithData(Long id) {
-        File file = fileRepository.findFileById(id);
-        if (file == null) {
-            throw new NotFoundException("File with ID " + id + " not found.");
-        }
-
-        try (InputStream fileStream = fileMinioService.getFile(file.getStorageKey())) {
-            byte[] fileData = fileStream.readAllBytes();
-            return FileMapperOld.toFileDTOWithFileData(file, fileData);
+    // ------------------------------| Retrieving Methods |------------------------------
+    public List<FileMetadataDTO> getAllFiles() {
+        try {
+            return fileRepository.findAllFiles().stream()
+                .map(fileMetadataMapper::toFileMetadataDTO)
+                .toList();
         } catch (Exception e) {
-            throw new DatabaseException("Failed to retrieve file data: " + e.getMessage());
+            throw new DatabaseException("Failed to upload file: " + e.getMessage());
         }
     }
 
-    public FileDTO getFileMetadata(Long id) {
-        File file = fileRepository.findFileById(id);
-        if (file == null) {
-            throw new NotFoundException("File with ID " + id + " not found.");
+    public FileMetadataDTO getFileMetadataById(Long id) {
+        try {
+            FileMetadataEntity fileMetadataEntity = fileRepository.findFileById(id);
+            if (fileMetadataEntity == null) {
+                throw new NotFoundException("File with id " + id + " not found.");
+            }
+            return fileMetadataMapper.toFileMetadataDTO(fileMetadataEntity);
+        } catch (NotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DatabaseException("An database error occured while fetching file with ID " + id + " from the database.");
         }
-        return FileMapperOld.toFileDTO(file);
     }
 
-    @Transactional
-    public void deleteFile(Long id) throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException {
-        File file = fileRepository.findFileById(id);
-        if (file == null) {
-            throw new NotFoundException("File with ID " + id + " not found.");
+    public FileMetadataDTO getFileMetadataByFileName(String fileName) {
+        try {
+            FileMetadataEntity fileMetadataEntity = fileRepository.findFileByFileName(fileName);
+            if (fileMetadataEntity == null) {
+                throw new NotFoundException("File with filename " + fileName + " not found.");
+            }
+            return fileMetadataMapper.toFileMetadataDTO(fileMetadataEntity);
+        } catch (NotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DatabaseException("An database error occured while fetching file with filename " + fileName + " from the database.");
         }
-
-        fileMinioService.deleteFile(file.getStorageKey());
-        fileRepository.deleteFileById(id);
     }
+
+    // ------------------------------| Deleting Methods |------------------------------
+    public void deleteFile(Long fileId) {
+        try {
+            FileMetadataEntity fileMetadataEntity = fileRepository.findFileById(fileId);
+            if (fileMetadataEntity == null) {
+                throw new NotFoundException("File with id " + fileId + " not found.");
+            }
+            fileMinioService.deleteFile(fileMetadataEntity.getFileName());
+            fileRepository.deleteFileById(fileId);
+        } catch (NotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DatabaseException("An database error occured while deleting file with ID " + fileId + " from the database.");
+        }
+    }
+
+    public FileMetadataDTO downloadFile(Long id) {
+        try {
+            FileMetadataEntity fileMetadataEntity = fileRepository.findFileById(id);
+            if (fileMetadataEntity == null) {
+                throw new NotFoundException("File with ID " + id + " not found.");
+            }
+            // Convert to DTO
+            FileMetadataDTO fileMetadataDTO = fileMetadataMapper.toFileMetadataDTO(fileMetadataEntity);
+
+            // Add streaming output
+            fileMetadataDTO.setDownloadStream(
+                fileMinioService.createDownloadStream(fileMetadataEntity.getFileName())
+            );
+
+            // fileMinioService.downloadFile(fileMetadataEntity.getFileName());
+            return fileMetadataDTO;
+        } catch (NotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DatabaseException("Failed to prepare file for download: " + e.getMessage());
+        }
+    }
+        
+
+    //     try (InputStream fileStream = fileMinioService.getFile(file.getStorageKey())) {
+    //         byte[] fileData = fileStream.readAllBytes();
+    //         return fileMapper.toFileDTOWithFileData(file, fileData);
+    //     } catch (Exception e) {
+    //         throw new RuntimeException("Failed to retrieve file data.");
+    //     }
+    // }
+
 
     // ------------------------------| Utility Methods |------------------------------
     // Count all files
-    public long countFiles() {
+    public Long countFiles() {
         try {
             return fileRepository.countFiles();
         } catch (Exception e) {

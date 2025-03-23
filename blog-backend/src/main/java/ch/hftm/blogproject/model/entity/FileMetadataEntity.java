@@ -1,35 +1,36 @@
-package ch.hftm.blogproject.model.dto;
+package ch.hftm.blogproject.model.entity;
 
 import java.time.ZonedDateTime;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-// Same as the File object class but with a byte array for the file data added.
-public class FileDTO {
+@Entity
+public class FileMetadataEntity {
 
     // Fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // @Column(name = "id")
     private Long id;
     private String fileName;
     private String contentType;
     private Long fileSize;
     private ZonedDateTime uploadDate;
     private String checksum;
-    private byte[] fileData;
 
     // Constructors
-    public FileDTO() {}
+    public FileMetadataEntity() {}
 
-    public FileDTO(String fileName, String contentType, Long fileSize, ZonedDateTime uploadDate, String storageKey, String checksum, byte[] fileData) {
+    public FileMetadataEntity(String fileName, String contentType, Long fileSize, ZonedDateTime uploadDate, String checksum) {
         this.fileName = fileName;
         this.contentType = contentType;
         this.fileSize = fileSize;
         this.uploadDate = uploadDate;
         this.checksum = checksum;
-        this.fileData = fileData;
     }
 
     // Getters and Setters
@@ -68,11 +69,5 @@ public class FileDTO {
     }
     public void setChecksum(String checksum) {
         this.checksum = checksum;
-    }
-    public byte[] getFileData() {
-        return this.fileData;
-    }
-    public void setFileData(byte[] fileData) {
-        this.fileData = fileData;
     }
 }

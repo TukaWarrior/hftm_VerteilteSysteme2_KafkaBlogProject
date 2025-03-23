@@ -9,7 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Blog {
+public class BlogEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,11 +23,11 @@ public class Blog {
     private boolean validationStatus;
 
     // Default constructor
-    public Blog() {
+    public BlogEntity() {
     }
 
     // All-args constructor
-    public Blog(Long blogID, String title, String content, String creator, ZonedDateTime createdAt, ZonedDateTime lastChangedAt, boolean validationStatus) {
+    public BlogEntity(Long blogID, String title, String content, String creator, ZonedDateTime createdAt, ZonedDateTime lastChangedAt, boolean validationStatus) {
         this.blogID = blogID;
         this.title = title;
         this.content = content;

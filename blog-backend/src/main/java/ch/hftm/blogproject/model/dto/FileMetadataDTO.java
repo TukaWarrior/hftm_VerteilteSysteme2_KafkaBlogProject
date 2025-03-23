@@ -1,12 +1,16 @@
-package ch.hftm.blogproject.model.entity;
+package ch.hftm.blogproject.model.dto;
 
 import java.time.ZonedDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.ws.rs.core.StreamingOutput;
 
-public class File {
+
+public class FileMetadataDTO {
 
     // Fields
     @Id
@@ -17,11 +21,13 @@ public class File {
     private Long fileSize;
     private ZonedDateTime uploadDate;
     private String checksum;
-
+    @JsonIgnore
+    private StreamingOutput downloadStream;
+    
     // Constructors
-    public File() {}
+    public FileMetadataDTO() {}
 
-    public File(String fileName, String contentType, Long fileSize, ZonedDateTime uploadDate, String checksum) {
+    public FileMetadataDTO(String fileName, String contentType, Long fileSize, ZonedDateTime uploadDate, String storageKey, String checksum, byte[] fileData) {
         this.fileName = fileName;
         this.contentType = contentType;
         this.fileSize = fileSize;
@@ -65,5 +71,12 @@ public class File {
     }
     public void setChecksum(String checksum) {
         this.checksum = checksum;
+    }
+    // @JsonIgnore
+    public StreamingOutput getDownloadStream() {
+        return downloadStream;
+    }
+    public void setDownloadStream(StreamingOutput downloadStream) {
+        this.downloadStream = downloadStream;
     }
 }
