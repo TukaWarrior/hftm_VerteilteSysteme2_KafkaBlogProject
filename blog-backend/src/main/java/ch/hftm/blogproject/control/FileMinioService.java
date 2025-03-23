@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import org.jboss.resteasy.reactive.multipart.FileDownload;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import ch.hftm.blogproject.model.entity.FileMetadataEntity;
