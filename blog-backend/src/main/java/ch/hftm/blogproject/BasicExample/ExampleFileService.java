@@ -1,11 +1,10 @@
-package ch.hftm.blogproject.basicUploadExample;
+package ch.hftm.blogproject.BasicExample;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import ch.hftm.blogproject.model.entity.ExampleFile;
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
 import io.minio.MakeBucketArgs;
