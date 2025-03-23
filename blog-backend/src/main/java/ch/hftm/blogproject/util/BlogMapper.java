@@ -4,10 +4,12 @@ import java.time.ZonedDateTime;
 
 import ch.hftm.blogproject.model.dto.BlogDTO;
 import ch.hftm.blogproject.model.entity.BlogEntity;
+import jakarta.enterprise.context.ApplicationScoped;
 
+@ApplicationScoped
 public class BlogMapper {
 
-    public static BlogEntity toBlogEntity(BlogDTO blogDTO) {
+    public BlogEntity toBlogEntity(BlogDTO blogDTO) {
         BlogEntity blogEntity = new BlogEntity();
         blogEntity.setTitle(blogDTO.getTitle());
         blogEntity.setContent(blogDTO.getContent());
@@ -17,7 +19,7 @@ public class BlogMapper {
         return blogEntity;
     }
 
-    public static BlogDTO toBlogDTO(BlogEntity blogEntity) {
+    public BlogDTO toBlogDTO(BlogEntity blogEntity) {
         BlogDTO blogDTO = new BlogDTO();
         blogDTO.setBlogID(blogEntity.getBlogID());
         blogDTO.setTitle(blogEntity.getTitle());

@@ -21,13 +21,15 @@ public class BlogService {
     BlogRepository blogRepository;
     @Inject
     BlogValidationProducer blogValidationProducer;
+    @Inject
+    BlogMapper blogMapper;
     
     // ========================================| Retrieval Methods |========================================
     // Get all blogs
     public List<BlogDTO> getAllBlogs() {
         try {
             return blogRepository.findAllBlogs().stream()
-                .map(BlogMapper::toBlogDTO)
+                .map(blogMapper::toBlogDTO)
                 .toList();
         } catch (Exception e) {
             throw new DatabaseException("Failed to retrieve all blogs from the database.");
@@ -41,7 +43,7 @@ public class BlogService {
             if (blog == null) {
                 throw new NotFoundException("Blog not found with ID: " + blogID);
             }
-            return BlogMapper.toBlogDTO(blog);
+            return blogMapper.toBlogDTO(blog);
         } catch (NotFoundException e) {
             throw e;
         } catch (Exception e) {
@@ -54,7 +56,7 @@ public class BlogService {
     // @Transactional
     public BlogDTO addBlog(BlogDTO blogDTO) {
         try {
-            BlogEntity blog = BlogMapper.toBlogEntity(blogDTO);
+            BlogEntity blog = blogMapper.toBlogEntity(blogDTO);
             blog.setCreatedAt(ZonedDateTime.now());
             blog.setValidationStatus(false);
             blogRepository.persistBlog(blog);
@@ -62,7 +64,7 @@ public class BlogService {
             // Send blog for validation via Kafka
             blogValidationProducer.sendBlogForValidation(blog);
 
-            return BlogMapper.toBlogDTO(blog);
+            return blogMapper.toBlogDTO(blog);
         } catch (Exception e) {
             throw new DatabaseException("Failed to create new blog in the database.");
         }
@@ -87,7 +89,7 @@ public class BlogService {
             // Send blog for validation via Kafka
             blogValidationProducer.sendBlogForValidation(blog);
             
-            return BlogMapper.toBlogDTO(blog);
+            return blogMapper.toBlogDTO(blog);
         } catch (NotFoundException e) {
             throw e;
         } catch (Exception e) {
