@@ -1,15 +1,23 @@
-package ch.hftm.blogproject.model.dto;
+package ch.hftm.blogproject.BasicExample;
 
-public class ImageDTO {
-    
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
+public class ExampleFile {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String fileName;
     private String contentType;
 
     // Constructors
-    public ImageDTO(){}
+    public ExampleFile(){}
 
-    public ImageDTO(String fileName, String contentType){
+    public ExampleFile(String fileName, String contentType){
         this.fileName = fileName;
         this.contentType = contentType;
     }

@@ -1,12 +1,11 @@
-package ch.hftm.blogproject.control;
+package ch.hftm.blogproject.basicUploadExample;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import ch.hftm.blogproject.model.entity.ExampleImage;
-import ch.hftm.blogproject.repository.ImageRepository;
+import ch.hftm.blogproject.model.entity.ExampleFile;
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
 import io.minio.MakeBucketArgs;
@@ -19,18 +18,18 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class ExampleImageService {
+public class ExampleFileService {
     
     @Inject
     MinioClient minioClient;
 
     @Inject
-    ImageRepository imageRepository;
+    ExampleFileRepository imageRepository;
 
     private static final String BUCKET_NAME = "test-images"; 
 
     @Transactional
-    public ExampleImage uploadImage(String fileName, InputStream fileStream, long fileSize, String contentType) {
+    public ExampleFile uploadImage(String fileName, InputStream fileStream, long fileSize, String contentType) {
         try (InputStream stream = fileStream) { // Ensure the InputStream is closed
             // Upload the file to MinIO
             minioClient.putObject(
@@ -43,7 +42,7 @@ public class ExampleImageService {
             );
 
             // Save metadata in the database
-            ExampleImage image = new ExampleImage(fileName, contentType);
+            ExampleFile image = new ExampleFile(fileName, contentType);
             imageRepository.persist(image);
 
             return image;

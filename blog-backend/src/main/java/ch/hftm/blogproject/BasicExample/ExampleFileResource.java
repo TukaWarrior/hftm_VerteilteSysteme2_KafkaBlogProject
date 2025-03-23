@@ -1,4 +1,4 @@
-package ch.hftm.blogproject.boundary;
+package ch.hftm.blogproject.BasicExample;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -6,8 +6,6 @@ import java.io.InputStream;
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
-import ch.hftm.blogproject.control.ExampleImageService;
-import ch.hftm.blogproject.model.entity.ExampleImage;
 import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -20,10 +18,12 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 
-@Path("/images")
-public class ExampleImageResource {
+@Path("/examplefiles")
+public class ExampleFileResource {
 
-    @Inject ExampleImageService imageService;
+    @Inject
+    ExampleFileService exampleFileService;
+
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
@@ -39,8 +39,8 @@ public class ExampleImageResource {
             java.nio.file.Path uploadedFilePath = fileUpload.uploadedFile(); // Fully qualified name
             try (InputStream fileStream = new FileInputStream(uploadedFilePath.toFile())) {
                 // Upload the file
-                ExampleImage image = imageService.uploadImage(fileName, fileStream, fileSize, contentType);
-                return Response.status(Response.Status.CREATED).entity(image).build();
+                ExampleFile file = exampleFileService.uploadImage(fileName, fileStream, fileSize, contentType);
+                return Response.status(Response.Status.CREATED).entity(file).build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -55,7 +55,7 @@ public class ExampleImageResource {
     @Blocking // Required for blocking operations like file download
     public Response downloadImage(@PathParam("fileName") String fileName) {
         try {
-            InputStream fileStream = imageService.downloadImage(fileName);
+            InputStream fileStream = exampleFileService.downloadImage(fileName);
             return Response.ok(fileStream).header("Content-Disposition", "attachment; filename=\"" + fileName + "\"").build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)

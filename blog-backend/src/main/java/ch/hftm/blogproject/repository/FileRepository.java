@@ -2,29 +2,29 @@ package ch.hftm.blogproject.repository;
 
 import java.util.List;
 
-import ch.hftm.blogproject.model.entity.FileMetadataEntity;
+import ch.hftm.blogproject.model.entity.FileEntity;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class FileMetadataRepository implements PanacheRepository<FileMetadataEntity>{
+public class FileRepository implements PanacheRepository<FileEntity>{
 
     @Transactional
-    public FileMetadataEntity persistFile(FileMetadataEntity file) {
+    public FileEntity persistFile(FileEntity file) {
         persist(file);
         return file;
     }
 
-    public List<FileMetadataEntity> findAllFiles() {
+    public List<FileEntity> findAllFiles() {
         return this.listAll();
     }
 
-    public FileMetadataEntity findFileById(Long fileId) {
+    public FileEntity findFileById(Long fileId) {
         return findById(fileId);
     }
 
-    public FileMetadataEntity findFileByFileName(String fileName) {
+    public FileEntity findFileByFileName(String fileName) {
         return find("fileName", fileName).firstResult();
     }
 

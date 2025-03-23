@@ -8,7 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class FileMetadataEntity {
+public class FileEntity {
 
     // Fields
     @Id
@@ -22,9 +22,9 @@ public class FileMetadataEntity {
     private String checksum;
 
     // Constructors
-    public FileMetadataEntity() {}
+    public FileEntity() {}
 
-    public FileMetadataEntity(String fileName, String contentType, Long fileSize, ZonedDateTime uploadDate, String checksum) {
+    public FileEntity(String fileName, String contentType, Long fileSize, ZonedDateTime uploadDate, String checksum) {
         this.fileName = fileName;
         this.contentType = contentType;
         this.fileSize = fileSize;

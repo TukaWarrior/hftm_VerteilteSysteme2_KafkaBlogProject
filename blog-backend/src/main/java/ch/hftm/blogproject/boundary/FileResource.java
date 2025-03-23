@@ -5,7 +5,7 @@ import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import ch.hftm.blogproject.control.FileService;
-import ch.hftm.blogproject.model.dto.FileMetadataDTO;
+import ch.hftm.blogproject.model.dto.FileDTO;
 import ch.hftm.blogproject.model.exception.NotFoundException;
 import ch.hftm.blogproject.util.ExceptionMapper;
 import jakarta.inject.Inject;
@@ -34,7 +34,7 @@ public class FileResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllFiles() {
         try {
-            return Response.status(Response.Status.OK).entity(fileService.getAllFiles()).build();
+            return Response.status(Response.Status.OK).entity(fileService.getAllFilesMetadata()).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(exceptionMapper.toExceptionDTO(e)).build();
         }
@@ -45,7 +45,7 @@ public class FileResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getFileMetadata(@PathParam("id") Long id) {
         try {
-            FileMetadataDTO fileMetadataDTO = fileService.getFileMetadataById(id);
+            FileDTO fileMetadataDTO = fileService.getFileMetadataById(id);
             return Response.status(Response.Status.OK).entity(fileMetadataDTO).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND).entity(exceptionMapper.toExceptionDTO(e)).build();
@@ -58,7 +58,7 @@ public class FileResource {
     public Response downloadFile(@PathParam("id") Long id) {
         try {
             // Get metadata with download stream
-            FileMetadataDTO fileMetadataDTO = fileService.downloadFile(id);
+            FileDTO fileMetadataDTO = fileService.downloadFile(id);
 
             // Build proper HTTP response with headers
             return Response.ok(fileMetadataDTO.getDownloadStream())
@@ -78,38 +78,13 @@ public class FileResource {
         }
     }
 
-    // Currently NOT WORKING Error: Not Found
-    // @GET
-    // @Path("/{filename}/metadata")
-    // @Produces(MediaType.APPLICATION_JSON)
-    // public Response getFileMetadata(@PathParam("filename") String filename) {
-    //     try {
-    //         FileMetadataDTO fileMetadataDTO = fileService.getFileMetadataByFileName(filename);
-    //         return Response.status(Response.Status.OK).entity(fileMetadataDTO).build();
-    //     } catch (Exception e) {
-    //         return Response.status(Response.Status.NOT_FOUND).entity("Error retrieving metadata: " + e.getMessage()).build();
-    //     }
-    // }
-
-    // @GET
-    // @Path("/{id}")
-    // @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    // public Response downloadFile(@PathParam("id") Long id) {
-    //     try {
-    //         FileDownload fileDownload = fileService.
-    //         return Response.status(Response.Status.OK).entity().build();
-    //     } catch (Exception e) {
-    //         return Response.status(Response.Status.NOT_FOUND).entity("Error downloading file").build();
-    //     }
-    // }
-
     // ========================================| Post Endpoints |========================================
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response uploadFile(@RestForm FileUpload fileUpload) {
         try {
-            FileMetadataDTO savedFile = fileService.uploadFile(fileUpload);
+            FileDTO savedFile = fileService.uploadFile(fileUpload);
             return Response.status(Response.Status.CREATED).entity(savedFile).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(exceptionMapper.toExceptionDTO(e)).build();

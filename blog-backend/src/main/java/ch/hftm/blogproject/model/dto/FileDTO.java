@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.ws.rs.core.StreamingOutput;
 
 
-public class FileMetadataDTO {
+public class FileDTO {
 
     // Fields
     @Id
@@ -25,9 +25,9 @@ public class FileMetadataDTO {
     private StreamingOutput downloadStream;
     
     // Constructors
-    public FileMetadataDTO() {}
+    public FileDTO() {}
 
-    public FileMetadataDTO(String fileName, String contentType, Long fileSize, ZonedDateTime uploadDate, String storageKey, String checksum, byte[] fileData) {
+    public FileDTO(String fileName, String contentType, Long fileSize, ZonedDateTime uploadDate, String storageKey, String checksum, byte[] fileData) {
         this.fileName = fileName;
         this.contentType = contentType;
         this.fileSize = fileSize;
