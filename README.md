@@ -2,10 +2,16 @@
 This project is part of the **Distributed Systems 2** course at the hftm. It aims to demonstrate communication between two applications using apache kafka.
 
 The project contains two applications:
-**blog-backend**: A blog backend application, using a mysql database and providing http endpoints to manage blogs. 
+
+**blog-backend**: 
+
+A blog backend application, using a mysql database and providing http endpoints to manage blogs. 
 The blog backend als oacts as a demo, showing how to implement a storage bucket for file upload and download. 
-    It utilises a locally running minIO instance as a storage bucket. Files and their metadata can be accessed via an http endpoint. 
-**text-validator**: A validation service that takes incomming blogs and checks if they contain profanity. 
+It utilises a locally running minIO instance as a storage bucket. Files and their metadata can be accessed via an http endpoint.
+
+**text-validator**: 
+
+A validation service that takes incomming blogs and checks if they contain profanity. 
 
 Each application can be found in their respective subfolders. 
 
